@@ -1,0 +1,12 @@
+{
+  "name": "savnik",
+  "owner": { "name": "Peter Savnik" },
+  "description": "Heating and pellet-system skills",
+  "plugins": [
+    {
+      "name": "pellet-expert",
+      "source": "./plugins/pellet-expert",
+      "description": "Lindner & Sommerauer pellet boiler expert"
+    }
+  ]
+}

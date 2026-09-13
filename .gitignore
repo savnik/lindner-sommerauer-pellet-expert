@@ -1,0 +1,26 @@
+# Source PDFs and photos of manuals, controller screens and installations
+# live OUTSIDE the repo tree. They are never committed here, scrubbed or not.
+# The ingest-document skill reads them from wherever Peter keeps them.
+
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Claude Code local state
+.claude/settings.local.json
+
+# Node / Python tooling, if any is ever added
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+
+# Logs and temp
+*.log
+*.tmp

@@ -1,0 +1,9 @@
+{
+  "name": "pellet-expert",
+  "description": "Expert guidance on Lindner & Sommerauer wood pellet systems",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": { "name": "Peter Savnik" },
+  "repository": "https://github.com/savnik/lindner-sommerauer-pellet-expert",
+  "homepage": "https://github.com/savnik/lindner-sommerauer-pellet-expert"
+}
