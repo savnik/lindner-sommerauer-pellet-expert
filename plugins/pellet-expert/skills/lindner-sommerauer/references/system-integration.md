@@ -4,6 +4,8 @@
 model: SL-P 8 / SL-P 12 / SL-P 15 / SL-P 25 (Modell 2008; document states validity "ab Baujahr 2006")
 firmware: Pell 080325.1 (as printed in page footers; see verification.md for the version discrepancy)
 source document: "Betriebsanleitung Pelletsanlage SL-P 8/12/15/25, Modell 2008", SL-Technik GmbH / Lindner & Sommerauer, dated 18.04.2008 and 29.04.2008. Short name for anchors: SL-P BA 2008.
+source document 2: "Putz- und Reinigungsanleitung", Lindner & Sommerauer Heizanlagenbau, one page, undated, no model designation printed (supplied as the Anhang the BA 2008 contents page lists). Short name for anchors: L&S Putzanleitung.
+source document 3: "pr TRVB H 118 – Ausgabe 2003", Anhang 2 (Kontrollbuch), pages 26–29 of that directive, supplied as the "Wartungsbuch" Anhang of BA 2008. Not manufacturer content; generic to automatic wood-firing systems. Short name for anchors: TRVB H 118 (2003).
 sections covered:
   Kap. 1 — Heizmaterialqualität, Pellets-Lagerraum, Kamin, Anschluss an den Kamin, Kesseltemperatur, Rücklaufanhebung, Bestimmungsgemäße Verwendung, Anwendungsbereich
   Kap. 2 — Bauteile der Anlage (Pos. 1–17 and parts without figure), including the per-component hazard notes as printed
@@ -14,10 +16,12 @@ sections covered:
   Kap. 13 — Zusatzparameter Service, hydraulic-relevant notes only (Boiler START vs Pumpe START, Ext.Stop d. Fremdofen, Sensor 70° Zwischenbehälter)
   Kap. 15 — Rücklaufanhebung description (mixer-controlled RLAH on M1)
   Kap. 16 — Abhilfe bei Leistungsproblemen
+  Anhang — Putz- und Reinigungsanleitung (cleaning intervals per component, cleaning method)
+  Anhang — TRVB H 118 Anhang 2/2: Regelmäßige Kontrolle (weekly, monthly, maintenance intervals)
 sections not covered:
   Kap. 1 — Einleitung, Sicherheit/Allgemeines, Gefahrenhinweise (symbols), Personalauswahl, Sicherheitshinweise im Normalbetrieb, Sicherheitshinweise Instandhaltung, Gefahr durch Hitze, Haftungsausschluss: general safety text, no target file per ingest-document step 2 — flagged for a plan decision
   Anhang — Service und Sicherheitstechnik Überprüfung (blank checklist form): not ingested
-  Anhang — Putz- und Reinigungsanleitung, Wartungsbuch lt. prTRVB H 118: listed in the contents, not present in the scan
+  Anhang — TRVB H 118 Anhang 2/1, 2/3, 2/4 (Kontrollbuch cover form, filled sample form marked MUSTER, blank monthly form): forms, not transcribed; only their field names are listed
   Figures — Kap. 2 cutaway drawing, Kap. 3 system drawing, Kap. 9 room-sensor drawing: not transcribed; only the printed text and captions are
 -->
 
@@ -295,4 +299,73 @@ Parameter ranges (Rücklauf SOLL, RL-Pumpe EIN/AUS bei) are in parameters.md, Ka
 | Kontrolle der Installation (Hydraulik). | Wenn die Beheizung unzureichend ist, zuerst kontrollieren, ob die Wärmeerzeugung (Kessel), oder die Wärmeverteilung (Pumpen – Mischer) schuld sind. Bei Unklarheiten, Kontakt mit Ihrem ausführenden Installateur aufnehmen. |
 | Minderwertige Pelletsqualität (Staubanteil zu hoch, Pressdichte) | Um energiewirtschaftlich eine vernünftige Lösung zu erreichen, sollte man sich unbedingt an die vorgegebenen Normheizmaterialien halten. |
 
-> GAP: The "Putz und Service-Anleitung" referred to in row 2 is listed in the contents as an Anhang but is not in the scan.
+The "Putz und Service-Anleitung" referred to in row 2 was ingested separately; see the Anhang section below. (An earlier GAP marker here is closed.)
+
+---
+
+## Anhang — Putz- und Reinigungsanleitung (cleaning guide) [L&S Putzanleitung, S. 1]
+
+One page, Lindner & Sommerauer Heizanlagenbau letterhead, undated. A cutaway drawing of the boiler (not transcribed) carries the following labels:
+
+**ACHTUNG: Nach jeder Rauchrohrreinigung Saugzugventilator kontrollieren!**
+
+| Bauteil | Intervall (as printed) |
+|---|---|
+| Rauchrohr | regelmäßig kontrollieren |
+| Saugzug | mind. 1x jährlich reinigen und kontrollieren |
+| Putzmechanik | mind. 1x jährlich reinigen und kontrollieren |
+| Wärmetauscher | 1x Jährlich reinigen und kontrolliere (as printed) |
+| Brennraum | mind. 1x jährlich reinigen und kontrollieren |
+| Aschenlade | nach Bedarf entleeren |
+| Zahnräder | 1x jährlich kontrollieren und nach Bedarf schmieren |
+
+Die Reinigung des Kessels bzw. der Entfernung der Flugasche erfolgt am besten mit einem Industriestaubsauger. Die Gesamtreinigung der Anlage wird zweckmäßigerweise von oben nach unten durchgeführt, wobei der Brenner geöffnet sein sollte.
+
+Die Reinigungsintervalle sind abhängig von der Pelletsqualität (Normpellets verwenden) und reichen von 1x monatlich bis 1x jährlich.
+
+> GAP: No model designation, date or version is printed on this page. It is treated as belonging to SL-P BA 2008 only because that manual's contents page lists a "Putz- und Reinigungsanleitung" as Anhang. See verification.md line 22.
+
+> GAP: Related intervals printed elsewhere: Kap. 3, S. 2 says the Aschenlade is "im Winter monatlich zu entleeren"; Kap. 5 uses an Aschenlade counter (Standard 200, message at 150 Std.). This page says only "nach Bedarf". Not reconciled.
+
+---
+
+## Anhang — Wartungsbuch: TRVB H 118 (2003), Anhang 2 Kontrollbuch [TRVB H 118 (2003), Anhang 2/1–2/4, S. 26–29]
+
+Not manufacturer content. Four pages from the Austrian fire-prevention directive "pr TRVB H 118 – Ausgabe 2003", supplied as the "Wartungsbuch lt. prTRVB H 118" Anhang listed in the BA 2008 contents. The scanned copy has the pages in the order 2/1, 2/3, 2/2, 2/4.
+
+### Anhang 2/1 — Kontrollbuch (cover form) [S. 26]
+
+Anhang 2 - Kontrollbuch: Sämtliche Überprüfungen, Reinigungen, Verrichtungen und Vorkommnisse sind in diesem Kontrollbuch laut nachfolgendem Muster einzutragen. Form fields: Anlagenbetreiber, Anlagenerrichter, Feuerungsanlage (Fabrikat, Type, Baujahr, Heizleistung, Sonstiges). Not transcribed further.
+
+### Anhang 2/2 — Regelmäßige Kontrolle der automatischen Holzfeuerungsanlage (während der Heizperiode/Betriebszeit) [S. 27]
+
+**1) Wöchentliche Sichtkontrolle:** Einmal wöchentlich ist die gesamte Feuerungsanlage einschließlich der Brennstofflagerung einer Sichtkontrolle zu unterziehen. Festgestellte Mängel sind unverzüglich zu beheben.
+
+**2) Monatliche Kontrollen:** Monatlich sind folgende Kontrollen durchzuführen:
+- Funktionstüchtigkeit der Rückbrand-Schutzeinrichtung RSE, insbesondere der zuverlässige Schließvorgang
+- Betriebsbereitschaft der Löscheinrichtungen einschließlich Wasserzufuhr
+- Sauberkeit der Rauchgaswege (Rauchgaszüge im Heizkessel, Verbindungsstück und Rauchfang)
+- Ordnungsgemäßer Betrieb der Steuerung
+- Funktionstüchtigkeit der Störungsmeldung/Warneinrichtung(en)
+- Ordnungsgemäßer Betrieb der Verbrennungsluft- und Saugzugventilatoren
+- Ordnungsgemäßer Zustand des Feuerungsraumes/der Ausmauerung
+- Einsatzbereitschaft der/des tragbaren Feuerlöscher(s)
+- Ordnungsgemäße Aschelagerung
+- Heizraum frei von brennbaren Lagerungen
+- Dach frei von brennbaren Ablagerungen
+- Brandschutzabschlüsse (Brandschutztüren - selbstschließend)
+
+**3) Wartung:** Je nach Heizleistung ist die Feuerungsanlage regelmäßig in nachstehenden Zeitintervallen einer Wartung durch den Anlagenerrichter unterziehen zu lassen.
+
+| Heizleistung | Wartungsintervalle |
+|---|---|
+| ≤ 150 KW | alle 3 Jahre |
+| ≤ 400 KW | alle 2 Jahre |
+| > 400 KW | 1 x jährlich |
+
+### Anhang 2/3 and 2/4 — Kontrollen der automatischen Holzfeuerungsanlage durch den Anlagenbetreiber [S. 28–29]
+
+Monthly log form (2/3 is a filled sample watermarked MUSTER, 2/4 is blank). Header fields: Jahr, Anlagenbetreiber, verantwortlicher Anlagenbetreuer. Rows (Monatliche Kontrolle, one column per month Jän–Dez plus Bemerkungen): Rückbrand-Schutzeinrichtung; Löscheinrichtung(en); Rauchgaswege; Steuerung; Warneinrichtung(en); Ventilatoren; Feuerungsraum/Ausmauerung; Tragbare Feuerlöscher; Aschelagerung; Lagerungen im Heizraum; Ablagerungen am Dach; Brandschutzabschlüsse; Rauchfang-Überpr./Reinig.; Unterschrift/Kurzzeichen. Footer box: Wartung durch fachkundige Person, durchgeführt am, Unterschrift, Bemerkungen. The sample entries on 2/3 are the directive's printed example and are not transcribed.
+
+> GAP: The TRVB pages are a generic directive excerpt. Whether the ≤ 150 KW "alle 3 Jahre" maintenance interval is what the manufacturer or the installer actually requires for an SL-P is not stated in either document (Kap. 1, S. 2 only "empfiehlt" a Wartungsvertrag). See verification.md line 23.
+

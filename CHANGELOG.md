@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   controller menus, parameter lists, service parameters and error messages
   F2–F167 in `parameters.md`. Coverage manifests filled; 21 uncertain readings
   logged in `verification.md`.
+- Anhang content: the one-page Lindner & Sommerauer Putz- und
+  Reinigungsanleitung and the TRVB H 118 (2003) Anhang 2 Kontrollbuch, added
+  to `system-integration.md`; 5 further verification lines.
 - Marketplace and plugin manifests.
 - Skill skeleton `lindner-sommerauer` with section headers and empty
   reference stubs carrying coverage manifests.
