@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Eval sets completed: five owner-written integration questions and three
+  manual-reasoning questions, with pass bars. Integration set passes in a
+  proxy run after one skill fix (routing row for switching off and seasonal
+  questions). Gap-marking and anchor conventions finalised; three
+  verification lines closed by full-resolution re-reads.
+
 - Skill sections written: data handling, safety (danger signals first, hard
   limits, pre-work warnings), audience modes, basis and tiers, routing with an
   English-to-German search glossary. Chapter 1 safety text of the operating

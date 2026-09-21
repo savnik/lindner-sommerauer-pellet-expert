@@ -265,6 +265,7 @@ chapter heading or the German term, then read that section.
 | Wiring, terminals, suction distributor, room sensor resistances | `system-integration.md`: Hauptsteuerung (SL-P MA 2009), EAP RTFH4 |
 | Boiler room, pellet store, fill pipes, chimney, draught | `system-integration.md`: SL-P MA 2009 sections and BA 2008 Kap. 1 |
 | Commissioning, first start | `system-integration.md` Kap. 4 and the L&S IB-Protokoll form |
+| Switching off, summer, season end, going away | There is no shutdown chapter, so assemble the cases and ask which is meant. Stop and start: `parameters.md` Kap. 4 (Ein/Aus keys), fan run-on in Kap. 13 (V1 Nachlauf). Main switch and what it cuts: `system-integration.md` Kap. 2, Pos. 3. Before maintenance: Kap. 1 Sicherheit. Summer: hot water only via Boilerbetrieb or Uhr-Boilerbetrieb (`parameters.md` Kap. 7–8), Rostschutz (Kap. 13), outdoor-temperature cut-off "Pumpe AUS bei" and Frostschutz (Kap. 9). Season end: the Putz- und Reinigungsanleitung. |
 | Cleaning, ash, maintenance intervals | `system-integration.md` Anhang Putz- und Reinigungsanleitung, TRVB H 118; ash counter in `parameters.md` Kap. 5 |
 | Poor output, not getting warm | `system-integration.md` Kap. 16 first, then the record, then the relevant menus |
 | Dimensions, outputs, efficiency, emissions | `system-integration.md` Technische Daten (two tables, kept separate) and the TÜV certificate (SL-P 12 only) |
