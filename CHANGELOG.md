@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Skill sections written: data handling, safety (danger signals first, hard
+  limits, pre-work warnings), audience modes, basis and tiers, routing with an
+  English-to-German search glossary. Chapter 1 safety text of the operating
+  manual ingested so the safety section can cite it.
+
 - Installation records: a private, local, per-installation file the skill
   reads before answering and extends with consent. Template in
   `templates/installation-record.md`, behaviour in SKILL.md ("What am I

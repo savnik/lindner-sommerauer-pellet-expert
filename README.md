@@ -40,9 +40,12 @@ names, addresses or serial numbers. You can read, edit or delete it at any time.
 
 Version 0.1.0 is an early beta. The references cover the SL-P 8/12/15/25
 operating manual (Modell 2008), the SL-P installation manual (05-2009) and a
-few supporting sheets, in the manufacturer's German. The safety, audience and
-routing sections of the skill are not written yet, and 39 uncertain readings
-are open in `verification.md`. Do not rely on it.
+few supporting sheets, in the manufacturer's German. The skill checks for
+danger signals first, never assumes your model, cites the document and page
+for every product fact, and says so when the documents are silent. 39
+uncertain readings are still open in `verification.md`, and the evals have not
+been run as a full set. Treat its answers as a second reading of the manual,
+not as a replacement for it.
 
 Maintained by Peter Savnik in spare time. Issues and corrections welcome;
 response time is best-effort.

@@ -11,6 +11,7 @@ source document 5: "Inbetriebnahme – Protokoll", Lindner & Sommerauer Biomasse
 source document 6: "Prüfbescheinigung / Test Certificate / Prøvningsattest" no. 2209092-2-DK, TÜV SÜD Landesgesellschaft Österreich, 21 September 2009, type SL-P 12 only. Short name for anchors: TÜV 2209092-2-DK.
 source document 7: "Raumfernfühler mit Sollwertkorrektur und Betriebswahlschalter RTFH4", EAP electric GmbH, one-page datasheet, undated. Third-party component; no boiler model printed. Short name for anchors: EAP RTFH4.
 sections covered:
+  Kap. 1 — Sicherheit/Allgemeines, Gefahrenhinweise, Sicherheitshinweise im Normalbetrieb, Sicherheitshinweise Instandhaltung, Gefahr durch Hitze, Personalauswahl (S. 1–3)
   Kap. 1 — Heizmaterialqualität, Pellets-Lagerraum, Kamin, Anschluss an den Kamin, Kesseltemperatur, Rücklaufanhebung, Bestimmungsgemäße Verwendung, Anwendungsbereich
   Kap. 2 — Bauteile der Anlage (Pos. 1–17 and parts without figure), including the per-component hazard notes as printed
   Kap. 3 — Beschreibung der Heizanlage, Technische Daten
@@ -27,7 +28,7 @@ sections covered:
   TÜV 2209092-2-DK — test basis and results for SL-P 12
   EAP RTFH4 — Anwendung, Technische Daten, Grundeinstellung resistance table, connection captions
 sections not covered:
-  Kap. 1 — Einleitung, Sicherheit/Allgemeines, Gefahrenhinweise (symbols), Personalauswahl, Sicherheitshinweise im Normalbetrieb, Sicherheitshinweise Instandhaltung, Gefahr durch Hitze, Haftungsausschluss: general safety text, no target file per ingest-document step 2 — flagged for a plan decision
+  Kap. 1 — Einleitung (greeting and blank technician phone field), Personalauswahl und Qualifikation beyond the one sentence quoted: not ingested
   Anhang — Service und Sicherheitstechnik Überprüfung (blank checklist form): not ingested
   Anhang — TRVB H 118 Anhang 2/1, 2/3, 2/4 (Kontrollbuch cover form, filled sample form marked MUSTER, blank monthly form): forms, not transcribed; only their field names are listed
   SL-P MA 2009 — drawings and photos (store layouts, wall-opening drawing, distributor drawing, dismantling photos, board layout): only printed captions, labels and dimensions transcribed; wire colours on the board drawing not transcribed (legibility, see verification.md)
@@ -52,6 +53,26 @@ sections not covered:
      abweichen!"). Handwritten annotations in the scanned copy are not
      transcribed. The "Anlagenwert" column of every parameter list is omitted
      for the same reason. -->
+
+---
+
+## Kap. 1 — Sicherheit (safety notes) [SL-P BA 2008, Kap. 1, S. 1–3]
+
+**Allgemeines:** Die vollautomatische Pelletsheizung entspricht dem Stand der Technik und den einschlägigen Sicherheitsvorschriften, sowie der TRVB H118. Den geltenden örtlichen Vorschriften ist bauseits Rechnung zu tragen. [S. 1]
+
+**Gefahrenhinweise:** Die Anlage wird mit 230V Wechselstrom betrieben. Reparaturen dürfen nur von SL-Servicetechnikern, SL-Vertriebspartnern und autorisierten Fachleuten (z.B.: Elektriker,..) durchgeführt werden. Bei Schäden durch unsachgemäße Reparatur erlischt der Garantieanspruch. [S. 2]
+
+Hinweiszeichen used in the manual: "Gefahr" — Nichtbeachten kann zu Schäden an Leib und Leben oder Sachwerten führen; lightning symbol — Gefahr für Personen durch Stromschlag; ">100°" symbol — Gefahr f. Personen durch Verbrennung. [S. 2]
+
+**Personalauswahl und Qualifikation:** Die Heizanlage soll von einer Person beaufsichtigt werden. Diese wird von unserem Techniker bei der Inbetriebnahme auf die Funktionen der Anlage eingeschult. Weiters ist keine zusätzliche Qualifikation notwendig. [S. 2]
+
+**Sicherheitshinweise im Normalbetrieb:** Heiße Verbrennungsgase werden über das Rauchrohr abgeführt. Das Rauchrohr kann so heiß werden, dass Verbrennungen auftreten können. [S. 3]
+
+**Sicherheitshinweise Instandhaltung:** Die Anlage wird mit elektrischem Strom (230 VAC) betrieben. Bei allen Instandhaltungsarbeiten Netzstecker ziehen! Instandhaltungsarbeiten bei eingeschalteter Anlage sind nicht erlaubt. Durch automatisch ablaufende Prozesse (z.B.: Reinigen,..) kann Gefahr durch Quetschen entstehen. [S. 3]
+
+**Gefahr durch Hitze:** Der Pelletskessel ist ökonomisch gestaltet und isoliert. Trotzdem entsteht an einigen Bauteilen (z.B.: Rauchrohr, ...) Strahlungswärme. Mindestabstände zu anderen Bauteilen sind lt. örtlichen Baubestimmungen einzuhalten. [S. 3]
+
+> GAP: The manual contains no instructions for emergencies: smoke or flue gas in the room, suspected carbon monoxide, fire, burn-back into the hopper, or what to do in the pellet store. It names no emergency procedure beyond the STB and the over-temperature behaviour in Kap. 1, S. 5.
 
 ---
 
