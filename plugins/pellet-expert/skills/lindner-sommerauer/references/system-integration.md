@@ -6,6 +6,10 @@ firmware: Pell 080325.1 (as printed in page footers; see verification.md for the
 source document: "Betriebsanleitung Pelletsanlage SL-P 8/12/15/25, Modell 2008", SL-Technik GmbH / Lindner & Sommerauer, dated 18.04.2008 and 29.04.2008. Short name for anchors: SL-P BA 2008.
 source document 2: "Putz- und Reinigungsanleitung", Lindner & Sommerauer Heizanlagenbau, one page, undated, no model designation printed (supplied as the Anhang the BA 2008 contents page lists). Short name for anchors: L&S Putzanleitung.
 source document 3: "pr TRVB H 118 – Ausgabe 2003", Anhang 2 (Kontrollbuch), pages 26–29 of that directive, supplied as the "Wartungsbuch" Anhang of BA 2008. Not manufacturer content; generic to automatic wood-firing systems. Short name for anchors: TRVB H 118 (2003).
+source document 4: "Montageanleitung SL-P", Lindner & Sommerauer, Stand 05-2009, 12 unpaginated pages; technical-data table lists SL-P 8 / 12 / 15 / 25; no firmware stated. Short name for anchors: SL-P MA 2009. Page numbers in anchors are scan pages because none are printed.
+source document 5: "Inbetriebnahme – Protokoll", Lindner & Sommerauer Biomasse-Heizanlagen / SL-Technik GmbH, one-page form, form no. 9.90.420, undated as a form, covers Brennschüsselanlage / Drehrostanlage / Pelletsanlage. Short name for anchors: L&S IB-Protokoll.
+source document 6: "Prüfbescheinigung / Test Certificate / Prøvningsattest" no. 2209092-2-DK, TÜV SÜD Landesgesellschaft Österreich, 21 September 2009, type SL-P 12 only. Short name for anchors: TÜV 2209092-2-DK.
+source document 7: "Raumfernfühler mit Sollwertkorrektur und Betriebswahlschalter RTFH4", EAP electric GmbH, one-page datasheet, undated. Third-party component; no boiler model printed. Short name for anchors: EAP RTFH4.
 sections covered:
   Kap. 1 — Heizmaterialqualität, Pellets-Lagerraum, Kamin, Anschluss an den Kamin, Kesseltemperatur, Rücklaufanhebung, Bestimmungsgemäße Verwendung, Anwendungsbereich
   Kap. 2 — Bauteile der Anlage (Pos. 1–17 and parts without figure), including the per-component hazard notes as printed
@@ -18,10 +22,18 @@ sections covered:
   Kap. 16 — Abhilfe bei Leistungsproblemen
   Anhang — Putz- und Reinigungsanleitung (cleaning intervals per component, cleaning method)
   Anhang — TRVB H 118 Anhang 2/2: Regelmäßige Kontrolle (weekly, monthly, maintenance intervals)
+  SL-P MA 2009 — all 12 pages: Allgemeine Hinweise, Lieferumfang, Zubehör, Der Pelletsraum, Heizraum/Lagerraum/Kamin, Einbau von Einblasrohren und Prallmatte, Befüllrohre durch andere Räume, Montage der Ansaugdüsen, Wanddurchbruch, Saug-Misch-Verteiler, Kessel (Anlieferung, dismantling, Aufstellen), Technische Daten, Anschluss an den Kamin, Elektrischer Anschluss, Hauptsteuerung terminal list, Verbindung zum Saug-Misch-Verteiler
+  L&S IB-Protokoll — the blank form's sections and check items
+  TÜV 2209092-2-DK — test basis and results for SL-P 12
+  EAP RTFH4 — Anwendung, Technische Daten, Grundeinstellung resistance table, connection captions
 sections not covered:
   Kap. 1 — Einleitung, Sicherheit/Allgemeines, Gefahrenhinweise (symbols), Personalauswahl, Sicherheitshinweise im Normalbetrieb, Sicherheitshinweise Instandhaltung, Gefahr durch Hitze, Haftungsausschluss: general safety text, no target file per ingest-document step 2 — flagged for a plan decision
   Anhang — Service und Sicherheitstechnik Überprüfung (blank checklist form): not ingested
   Anhang — TRVB H 118 Anhang 2/1, 2/3, 2/4 (Kontrollbuch cover form, filled sample form marked MUSTER, blank monthly form): forms, not transcribed; only their field names are listed
+  SL-P MA 2009 — drawings and photos (store layouts, wall-opening drawing, distributor drawing, dismantling photos, board layout): only printed captions, labels and dimensions transcribed; wire colours on the board drawing not transcribed (legibility, see verification.md)
+  L&S IB-Protokoll — the filled-in entries of the scanned copy (operator, address, installer, serial number, output, which boxes were ticked, date, signatures): installation-specific, omitted
+  TÜV 2209092-2-DK — signatory and company-register block: omitted
+  EAP RTFH4 — "Öffnen des Deckels" photo and the two circuit sketches: captions only; manufacturer contact block omitted
   Figures — Kap. 2 cutaway drawing, Kap. 3 system drawing, Kap. 9 room-sensor drawing: not transcribed; only the printed text and captions are
 -->
 
@@ -196,7 +208,7 @@ Als Betriebsarten stehen Dauerbetrieb, Uhrzeitbetrieb (z.B. zweimal täglich sta
 
 Um Garantieansprüche auf die Anlage nicht zu verlieren, darf die Heizung ausschließlich von einer befugten Person, anhand der in der Betriebanleitung enthaltenen Inbetriebnahme-Checkliste (Dreifache Ausfertigung), das erste Mal in Betrieb genommen werden. Eine Checkliste ist vom Kunden mit Unterschrift zu bestätigen und innerhalb von acht Tagen an die Herstellerfirma zu senden!
 
-> GAP: The Inbetriebnahme-Checkliste referred to here is not in the scan (only the Anhang "Service und Sicherheitstechnik Überprüfung" form is).
+An "Inbetriebnahme – Protokoll" form was ingested separately; see the L&S IB-Protokoll section below. (An earlier GAP marker here is closed. Whether that form is the "Inbetriebnahme-Checkliste (Dreifache Ausfertigung)" meant here is not stated on either document; see verification.md line 33.)
 
 Bei der Erstinbetriebnahme muss manuell der Zwischenbehälter mit Pellets gefüllt werden. Dazu gehen Sie in das Menü Dauerbetrieb, blättern dort bis zum Parameter „Saugen/Putzen" und starten mit „+" den Saugvorgang. Ist der Zwischenbehälter gefüllt, wechseln Sie in den Handbetrieb und starten mit der „+" das Menü „Brenner füllen". Es werden Pellets aus dem Zwischenbehälter in den Brenner gefördert. Die Funktion „Brenner füllen" sollte 2 bis 3 mal gestartet werden, bis die ersten Pellets in den Brennraum fallen. Mit „-" stoppen Sie die Stockerschnecke wieder.
 
@@ -368,4 +380,325 @@ Anhang 2 - Kontrollbuch: Sämtliche Überprüfungen, Reinigungen, Verrichtungen 
 Monthly log form (2/3 is a filled sample watermarked MUSTER, 2/4 is blank). Header fields: Jahr, Anlagenbetreiber, verantwortlicher Anlagenbetreuer. Rows (Monatliche Kontrolle, one column per month Jän–Dez plus Bemerkungen): Rückbrand-Schutzeinrichtung; Löscheinrichtung(en); Rauchgaswege; Steuerung; Warneinrichtung(en); Ventilatoren; Feuerungsraum/Ausmauerung; Tragbare Feuerlöscher; Aschelagerung; Lagerungen im Heizraum; Ablagerungen am Dach; Brandschutzabschlüsse; Rauchfang-Überpr./Reinig.; Unterschrift/Kurzzeichen. Footer box: Wartung durch fachkundige Person, durchgeführt am, Unterschrift, Bemerkungen. The sample entries on 2/3 are the directive's printed example and are not transcribed.
 
 > GAP: The TRVB pages are a generic directive excerpt. Whether the ≤ 150 KW "alle 3 Jahre" maintenance interval is what the manufacturer or the installer actually requires for an SL-P is not stated in either document (Kap. 1, S. 2 only "empfiehlt" a Wartungsvertrag). See verification.md line 23.
+
+---
+
+# Montageanleitung SL-P, Stand 05-2009 [SL-P MA 2009]
+
+Twelve unpaginated pages. Anchors give the scan page. Cover drawing is the same Heizraum / Brennstofflagerraum system drawing as BA 2008 Kap. 3, S. 1 (Förderschlauch 2" antistatisch, Saug-Misch-Verteiler, Ansaugdüsen, VL/RL).
+
+## Allgemeine Hinweise [SL-P MA 2009, scan S. 2]
+
+**Sicherheitshinweis:** Diese Vollautomatische Pelletsheizung entspricht dem Stand der Technik und den einschlägigen Sicherheitsvorschriften sowie der TRVB.
+
+**Gefahrenhinweis:** Der Pelletskessel wird mit elektrischem Strom (230V) betrieben. Durch unsachgemäße Installation od. Reparatur kann Lebensgefahr durch Stromschlag entstehen. Alle Arbeiten am Kessel sind von qualifiziertem Personal durchzuführen.
+
+**Garantie:** Eine fachgerechte Installation und Inbetriebnahme des Pelletskessels sind Voraussetzung für die Garantieleistungen durch den Hersteller.
+
+**Lieferumfang:** Pelletskessel. Zwischenbehälter mit vollautomatischer Saugeinrichtung.
+
+**Zubehör:** Saug-Misch-Verteiler für 2,3 od. 4 Ansaugdüsen. Spiralschlauch mit Erdungslitze als Saug- und Rückluftschlauch (25m). Ansaugdüse. Befüllrohre. Prallmatte. Z-Profile für Lagerraumtür. Storz-Kupplungen und Blinddeckel f. Befüllrohre.
+
+## Der Pelletsraum — Ausführung [SL-P MA 2009, scan S. 2]
+
+- Die Richtlinien der TRVB H118 und der örtlichen Bauvorschriften sind einzuhalten.
+- Der Pellets - Lagerraum muss trocken sein.
+- Der Pellets - Lagerraum muss dicht und massiv ausgeführt sein.
+- Die Umfassungswände und Geschoßdecke müssen der Brandwiderstandsklasse F90 entsprechen.
+- Die Einstiegsöffnung in den Pelletsraum muss nach außen aufgehen. Sie ist als Brandschutztür T30 auszuführen.
+
+## Heizraum, Lagerraum und Kamin [SL-P MA 2009, scan S. 3]
+
+Die Anlage kann auf drei Seiten bis auf wenige Zentimeter zur Wand gestellt werden. Es sollte jedoch bereits bei der Planung auf ausreichenden Platz für Servicearbeiten geachtet werden.
+
+Um einen Störungsfreien Betrieb zu gewährleisten sind folgende Punkte zu beachten:
+
+- **Zuluftöffnung im Heizraum** (keine Inbetriebnahme der Anlage ohne Zuluftöffnung)!
+- **Im unteren Leistungsbereich können Abgastemperaturen unter 90°C entstehen.** Pelletsheizanlagen sind deshalb an einen feuchtigkeitsunempfindlichen Kamin anzuschließen.
+- **Vor Errichtung einer automatischen Holzfeuerung ist das Einvernehmen mit dem zuständigen Rauchfangkehrer herzustellen.**
+- **Das Abgasrohr muss zum Kamin ansteigend** (ideal sind 45°) **installiert werden.** Lange Abgasstrecken zum Kamin sind zu vermeiden.
+- **Im Abgasrohr oder im Kamin ist ein Energiesparzugregler mit Explosionsklappe einzubauen.** Die Kaminzugregler sind einzustellen (Betriebsanleitung Seite 4 u. Technische Daten für Kaminberechnung)
+- **Prallplatte im Lagerraum montieren.** Bei der Einbringung der Pellets ist darauf zu achten, dass diese gegen eine Prallwand geblasen werden und das Heizmaterial ohne Beschädigung in den Lagerraum rieselt.
+- **Befüllrohre sollten nach Möglichkeit gerade ausgeführt werden. 90° Bögen sind zu vermeiden.**
+- **Lagerraum: trocken** (Feuchtigkeit lässt Pellets aufquellen), **dicht und massiv** (Brandwiderstandsklasse), **keine E-Installationen und Wasserführenden Leitungen** (Kondenswasser).
+- **Bei der Schlauchverlegung ist besonders darauf zu achten, dass es zu keinen Pelletsablagerungen kommen kann (keinen „Siphon" einbauen)!** (Two sketches: a single rising bend marked correct, an S-shaped sag marked wrong.)
+
+## Einbau von Einblasrohren und Prallmatte [SL-P MA 2009, scan S. 4]
+
+Two plan drawings (not transcribed) labelled: Einblasöffnung, Prallmatte, Z-Profil mit Brettern, Lucke T30, Einblasrohre, Blindboden 45°; dimensions printed 15, 20, 80/80.
+
+> GAP: The drawing dimensions 15, 20 and 80 carry no unit. See verification.md line 28.
+
+- Es ist immer ein Befüll- und ein Entlüftungsstutzen notwendig. Diese müssen aus Metall sein und sind zu erden. An der Außenseite muss eine Kupplung vom System Storz Typ A ∅ 100mm angebracht sein!
+- Führen Leitungen durch brandschutztechnische Bauteile, so sind sie im Bereich der Durchdringung entsprechend der geforderten Brandwiderstandsklasse abzuschotten!
+- Im Pellets - Lagerraum dürfen keine E-Installationen sein (Explosionsgefahr). Ist dies nicht vermeidbar ist Sie entsprechen der geltenden Vorschriften (z.B.: ÖVE, DVE, ..) explosionsgeschützt auszuführen!
+- Die Befüllstutzen sind mit Blindkupplungen zu verschließen!
+
+Es empfiehlt sich, einen Blindboden (z.B. 45° Neigung) einzubauen, um eine bessere Entleerung zu gewährleisten, und eine übermäßige Staubansammlung zu vermeiden.
+
+### Befüllrohre die durch andere Räume geführt werden [SL-P MA 2009, scan S. 4]
+
+Befüllrohre, die durch andere Räume geführt werden, sind entsprechend Zeichnung mit Steinwolle zu isolieren. Die Isolierung ist durch die Öffnung zu führen, der verbleibende Restspalt zu verputzen. Die Isolierungen sind an beiden Seiten der Wand mit Bindedraht zu sichern. Die Befülleitungen sind in geeigneter Weise zu fixieren (Deckenabhängung). (Drawing: Quelle TRVB H118.)
+
+| | 1.) Wände die F30 standhalten müssen | 2.) Wände die F90 standhalten müssen |
+|---|---|---|
+| Mindestlänge der Isolierung | l= 500mm | l= 500mm |
+| Mindestdicke der Isolierung | d= 40mm | d= 50mm |
+
+## Montage der Ansaugdüsen [SL-P MA 2009, scan S. 5]
+
+Drawing labels: 4x Befestigungsschrauben, RL-Schlauch, Saugschlauch, Einblasöffnung, Prallmatte, Z-Profil und Bretter, T30, Saugschläuche, Rückluftschläuche; nozzle spacing printed as "100".
+
+Die Ansaugdüsen sind am Boden zu befestigen. Abstand zw. den Düsen 800 – 1200 mm. Um größere Staubansammlungen zu vermeiden ist beidseitig ein schräger Boden einzubauen (ca. 45° Neigung). Von den Ansaugdüsen wird je ein Saugschlauch und Rückluftschlauch zum Saug-Misch-Verteiler geführt. Von dort werden nur ein Saugschlauch und ein Rückluftschlauch zum Kessel geführt.
+
+Die Schläuche sind in der Wanddurchführung einzumauern und zu verputzen. Ein Mindestbiegeradius von 25 cm ist bei den Schläuchen einzuhalten
+
+## Wanddurchbruch [SL-P MA 2009, scan S. 6]
+
+Fixings listed on the drawing: 4 Stk. Gestellschrauben M10x80 DIN 571 verz., 4 Stk. Scheiben M10 DIN 125 A verz., 4 Stk. Dübel Nylon N12 (distributor); 6 Stk. Gestellschrauben M6x40 DIN 571 verz., 6 Stk. Scheiben M6 DIN 125 A verz., 6 Stk. Dübel Nylon N8 (wall plate). Die Schläuche sind in der Wanddurchführung einzumauern und zu verputzen.
+
+| Mauerdurchbruch | Breite x Höhe |
+|---|---|
+| 1 Stk. Lagerraum-Ansaugdüse | 7 x 15cm |
+| 2 Stk. Lagerraum-Ansaugdüse | 16 x 15cm |
+| 3 Stk. Lagerraum-Ansaugdüse | 25 x 15cm |
+| 4 Stk. Lagerraum-Ansaugdüse | 33 x 15cm |
+
+**Achtung:** Wird auf Grund von behördlicher Anordnung oder den örtlichen Baubestimmungen eine Brandschutzmanschette vorgeschrieben, so sind die Nylon-Dübel durch Metalldübel zu ersetzen
+
+> GAP: Further drawing dimensions (110, 15, 12, and the 7 / 16 / 25 / 33 scale under the wall plate) carry no unit on the drawing. See verification.md line 28.
+
+## Saug-Misch-Verteiler (flap positions) [SL-P MA 2009, scan S. 6]
+
+In der Steuerung wird die Klappenstellung Pos.1 als AUF (der linke Abgang der Einheit ist offen) bezeichnet. Dadurch ergeben sich folgende Kombinationen:
+
+| | M1 | M2 | M3 |
+|---|---|---|---|
+| Saugpos.1 | AUF | AUF | AUF |
+| Saugpos.2 | ZU | AUF | AUF |
+| Saugpos.3 | ZU | ZU | AUF |
+| Saugpos.4 | ZU | ZU | ZU |
+
+Drawing: M2 is the upper unit, M1 lower left, M3 lower right; each unit has outlets Pos.2 and Pos.1; the four store-side outlets are Pos.1–Pos.4 left to right.
+
+## Kessel — Anlieferung and dismantling for transport [SL-P MA 2009, scan S. 7–9]
+
+Der Kessel wird auf einer Euro-Palette in einem Karton verpackt angeliefert. Um eine problemlose Aufstellung und Montage zu ermöglichen, ist die Verkleidung bereits auf der Palette zu entfernen. Dazu gehen sie folgendermaßen vor: [S. 7]
+
+**Displayverkleidung entfernen:** Schrauben oben lösen; nach oben schieben, um die Displayverkleidung auszuhängen; Buskabel am Display ausstecken. [S. 7]
+
+**Frontverkleidung freimachen:** In der Frontverkleidung ist der Hauptschalter integriert. Um die Verkleidung zu entfernen, muss das Netzkabel an der Platine ausgesteckt werden. **ACHTUNG** Bevor Sie die Abdeckung öffnen stellen sie sicher, das der Netzstecker nicht eingeseckt ist!! Stecken sie dazu den Stecker 1 (ganz links) aus und ziehen ihn durch die Kabeldurchführung. Sie können dann die Frontverkleidung inkl. Hauptschalter und Netzkabel entfernen. [S. 8]
+
+**Deckel entfernen:** Entfernen Sie zuerst die 3 Einsätze aus dem Deckelrahmen. Der Deckelrahmen ist nur auf Führungsbolzen gesteckt und kann daher problemlos heruntergenommen werden. [S. 8]
+
+**Verkleidung abnehmen:** Entfernen Sie zuerst beide Seitenverkleidungen. Diese sind in die Front- bzw. Rückwandverkleidungen eingehängt. Falls eine Seitenverkleidung leicht klemmt, drücken sie oben leicht gegen die Frontverkleidung. Dann sollte sich die Verkleidung lösen. [S. 8]
+
+Die Front- und Rückwandverkleidung ist mit je 2 Schrauben an der Grundplatte befestigt. Zum Entfernen der Verkleidung diese Schrauben lösen. [S. 9]
+
+Normalerweise muss der Vorratsbehälter zur Montage nicht abgenommen werden. Sollte jedoch ein besonders enges Hindernis die Einbringung unmöglich machen, so lösen sie am Behälter oben die Halteschraube und am Stockerkanal die Schrauben nach der Zellradsschleuse. Sie können den Behälter mit der Stockerschnecke herausziehen. Der Kessel kann so in den Heizraum transportiert werden. [S. 9]
+
+## Aufstellen des Kessels [SL-P MA 2009, scan S. 10]
+
+Der Kessel soll einen Wandabstand von ca. 10cm haben und ist waagrecht auszurichten. Nun kann der Kessel wieder in umgekehrter Reihenfolge zusammengebaut werden. Die Befestigungsschraube für die Rückwandverkleidung (mittig) kann weggelassen werden. An der Stirnseite sollten sie jedoch mit der Hand angeschraubt werden. Achten Sie darauf, das Sie keine Kabel vergessen an der Steuerung anzustecken
+
+Plan drawing labels: VL and RL connection pairs at both rear corners, Sicherheitsgruppe; dimensions 100, 1080, 100, 700, 630.
+
+> GAP: The plan-drawing dimensions carry no unit. See verification.md line 28.
+
+Vor Inbetriebnahme des Kessels kontrollieren, ob die Pelletsrutsche und der Brennertopf richtig eingehängt ist.
+
+### Technische Daten as printed in the Montageanleitung [SL-P MA 2009, scan S. 10]
+
+| | SL-P 8 | SL-P 12 | SL-P 15 | SL-P 25 |
+|---|---|---|---|---|
+| Nennleistung(kW) | 7,9 | 12 | 14,9 | 23,0 |
+| Leistungsbereich | 2,4-7,9 | 2,5-12 | 3,9-14,9 | 3,9-23,0 |
+| Breite | 1080 | 1080 | 1080 | 1080 |
+| Tiefe | 730 | 730 | 730 | 730 |
+| Höhe | 1500 | 1500 | 1500 | 1500 |
+| Gewicht mit eingeb. Brenner | 350 | 350 | 350 | 350 |
+| Wasserinhalt(Liter) | 43,6 | 43,6 | 43,6 | 43,6 |
+| Wasserseitiger Widerstand (k10/k20) (mbar) | 13,5/3,4 | 13,5/3,4 | 13,5/3,4 | 13,5/3,4 |
+| Rauchrohranschluss (mm) | 130 | 130 | 130 | 130 |
+| Rauchrohr | nach oben | nach oben | nach oben | nach oben |
+| Dm Vor/Rücklauf (Zoll) | 1" | 1" | 1" | 1" |
+| Vorlauf | nach oben | nach oben | nach oben | nach oben |
+| Rücklauf | nach oben | nach oben | nach oben | nach oben |
+| notw. Förderdruck bei 160°C (mbar) | 0,07/0,1 | 0,1/0,1 | 0,1/0,07 | 0,1/0,07 |
+| Abgastemperatur Nenn / Kleinste L. | (blank) | (blank) | (blank) | (blank) |
+| Aschenlade (Liter) | 20 | 20 | 20 | 20 |
+| Elektr. Anschluss | 230V ; 10A ; 50 Hz (all models) | | | |
+| Anzünder (W) | 300 | 300 | 300 | 300 |
+| Saugzug (W) | 32 | 32 | 32 | 32 |
+
+> GAP: This table differs from BA 2008 Kap. 3, S. 3 for SL-P 25 (Nennleistung 23,0 here, 23,5 there; Leistungsbereich 3,9-23,0 here, 3,9-23,5 there), leaves the Abgastemperatur row blank, and omits the efficiency, exhaust mass flow, CO2 and power-consumption rows. Both tables are kept with their own anchors; not merged. See verification.md line 29.
+
+## Anschluss an den Kamin [SL-P MA 2009, scan S. 11]
+
+**Kamin:** Ein, den örtlichen Bestimmungen und der Kesselleistung entsprechender Kamin ist Voraussetzung für den einwandfreien Betrieb der Anlage. Die Abgastemperatur kann im Teillastbereich unter 95°C sinken. Daher ist der Kamin feuchtigkeitsunempfindlich auszuführen. Wird die Anlage an einen bestehenden, feuchtigkeitsempfindlichen Kamin (z.B.: Ziegelmauerwerk) angeschlossen, so ist eine Kaminberechnung durchzuführen bzw. ein Kaminbefund einzuholen (Kaminkehrer).
+
+**Das Abgasrohr:** Lt. TRVB ist im Verbindungsstück (Abgasrohr) oder im Kamin innerhalb des Heizraumes eine Verpuffungsklappe (Explosionsklappe) einzubauen. Es ist ein Kaminzugregler einzubauen, der den Kaminzug auf 20 mbar begrenzt.
+
+> GAP: "auf 20 mbar" is transcribed as printed. BA 2008 Kap. 1, S. 4 gives the required draught as "7 bis 10 Pascal" and the technical data give a Förderdruck of 0,07–0,1 mbar. The printed 20 mbar is two orders of magnitude away from both and is not to be used as a setting without checking. Also "unter 95°C" here vs "unter 90°C" on scan S. 3 and in BA 2008. See verification.md lines 30 and 31.
+
+## Elektrischer Anschluss [SL-P MA 2009, scan S. 11]
+
+Der Heizkessel wird steckerfertig verdrahtet geliefert. Es müssen lediglich die Verbindungen zum Saug-Misch-Verteiler, zu den Modulen und zu den peripheren Geräten (Pumpen, Mischer, ..) Vorort hergestellt werden. Die Platine befindet sich unterhalb des Displays.
+
+Front-view drawing labels: Hauptsteuerungsplatine (behind the panel below the display); STB mechanisch zu entriegeln (button below the board cover, above the firebox door).
+
+## Hauptsteuerung — terminal assignment [SL-P MA 2009, scan S. 12]
+
+Board drawing is marked "IPN 80". Fuse positions are printed with ratings 2A, 10A, 10A and 3A; a jumper position is marked "C STOCKER"; two BUS sockets are at the right-hand end. The terminal strip labels under the drawing read: 230V, SAUG, GLÜH, PUTZ, STOCKER, AUST, LUFT, M1, M2, M3, FÜLL, STB (<100°), LAMBDA, DREH, EXT (AUS), KESSEL (PT100), ABGAS (PT100). Pin markings: terminals 1–4, 6, 7 are L1 PE N; terminal 5 is L1 PE L2 L3; terminal 8 is N PE Y1 Y2; terminals 9 and 10 are Y1 Y2.
+
+| Terminal | Label | Function as printed |
+|---|---|---|
+| 1 | NETZ | Netzanschluss (230V) |
+| 2 | SAUG | Saugturbine (230V) |
+| 3 | GLÜH | Zünderspirale (230V) |
+| 4 | PUTZ | Putzmotor (230V) |
+| 5 | STOCKER | Stockermotor (230V) |
+| 6 | AUST | Ext. Antriebsmotor (230V) |
+| 7 | LUFT | Saugzuggebläse V1 (230V) |
+| 8 | M1 | Saug-Misch-Verteiler Motor 1 (230V) |
+| 9 | M2 | Saug-Misch-Verteiler Motor 2 (230V) |
+| 10 | M3 | Saug-Misch-Verteiler Motor 3 (230V) |
+| 12 | FÜLL | Füllstandssensor |
+| 13 | STB | Sicherheitstemperaturbegrenzer |
+| 14 | LAMBDA | Lambdasonde |
+| 15 | DREH | Sensor Brenner zu |
+| 16 | EXT | Externer Start |
+| 18 | KESSEL | Kesselthermometer |
+| 19 | ABGAS | Abgasfühler |
+
+> GAP: Terminals 11 and 17 do not appear in the printed list or on the drawing. Which circuit each fuse protects is not printed. The wire-colour legends printed under terminals 12, 14 and 15 are too small to read reliably in the scan and are not transcribed. See verification.md line 32.
+
+Cross-reference, both as printed in BA 2008 Kap. 13: "Der Ausgang 6 kann für einen externen Austragungsmotor … verwendet werden" (S. 1) matches terminal 6 AUST here; "Am Ausgang 16 kann auch ein 70° Sensor installiert werden" (S. 4) refers to terminal 16 EXT here.
+
+### Verbindung zum Saug-Misch-Verteiler [SL-P MA 2009, scan S. 12]
+
+Die Stellmotoren des Saug-Misch-Verteilers werden direkt an der Hauptplatine angeschlossen. Bei 1 Saug-Misch-Verteiler (2 Ansaugdüsen) reicht ihnen die Verbindung von Anschluss 8 aus. Hierfür verwenden Sie ein 4-poliges Kabel (mind. 0,75mm²). Für die 2. und 3. Saug-Misch-Verteiler verwenden Sie je ein 2-poliges Kabel. Auch hier mind. 0,75mm².
+
+Wiring sketch: Anschlußleiste Steuerung terminals 8 / 9 / 10 (N, PE, Y1, Y2 from 8; Y1, Y2 from 9 and from 10) to the Klemmblock Saug-Misch-Verteiler, then to Stellmotor M1, M2, M3.
+
+---
+
+# Inbetriebnahme – Protokoll (commissioning record form) [L&S IB-Protokoll, S. 1]
+
+One-page form, no. 9.90.420, Lindner & Sommerauer Biomasse - Heizanlagen / SL-Technik GmbH. Only the blank form is transcribed. The entries, ticks, date and signatures of the scanned copy are installation-specific and omitted.
+
+Header fields: Name des Anlagenbetreibers, Straße, Ort; Montagefirma, Adresse, Monteur. **Feuerungsanlage:** Heizkessel-Typ, Wärmeleistung, Baujahr, Fabrik.-Nr.
+
+**Sicherheitstechnische Überprüfung:** Rückbrandschutzeinrichtung; Löscheinrichtung; Warneinrichtung; Zellenradschleuse; Rauchgaswege.
+
+**Anlagenbauteile überprüft:** Kaminzugregler; Ventilatoren; Ascheladen; Steuerung; Rücklaufanhebung.
+
+**Inbetriebnahme** (one of): 1 Brennschüsselanlage; 2 Drehrostanlage; 3 Pelletsanlage.
+
+**a) KONTROLLE HANDBETRIEB**
+1. Test Putzmotor
+2. Test Rückbrandklappe
+3. Zellenradschleuse (Achtung Drehrichtung!)
+4. Test Raumaustragung (Achtung Drehrichtung / Federpakete!)
+5. Test Stockermotor (Achtung Drehrichtung!)
+6. Test Lüfter V1 Saugzuggebläse (Achtung Drehrichtung!)
+7. Test Lüfter V2 Sekundärgebläse (Achtung Drehrichtung!)
+8. Test Föhnlüfter + Föhnheizung
+9. Test Boilerpumpe, Rücklaufpumpe, Heizkreispumpe
+10. Test Mischer auf / zu (Achtung Drehrichtung!)
+11. Test Sensoren: Füllstand, Drehrost, Lichtschranken
+12. Einschulung Handbetrieb
+
+**b) KONTROLLE DAUERBETRIEB**
+1. Kontrolle Kesseltemperatur
+2. Kontrolle Abgastemperatur
+3. Kontrolle V1 min / V1 max
+4. Kontrolle Pause min / Pause max
+5. Kontrolle Förderzeit
+6. Kontrolle Reinigungsautomatik
+7. Einschulung Dauerbetrieb
+8. Hinweis Wartung
+
+**c) EINSCHULUNG UHRZEITBETRIEB** 1. Wochentag einstellen 2. Uhrzeit einstellen 3. Uhrzeit auf nächsten Tag übertragen
+
+**d) EINSCHULUNG BOILERBETRIEB** 1. Boiler auswählen 2. Boiler Soll eingeben 3. Boiler Start eingeben 4. Boiler-Vorrang 5. Resttemperatur-Verwertung
+
+**e) EINSCHULUNG UHR-BOILER** 1. Uhrzeit einstellen
+
+**f) EINSCHULUNG AUSSENTEMPERATURREGELUNG** 1. Mischerkreis auswählen 2. Mischerkreis EIN/AUS 3. Nachtabsenkung EIN/AUS 4. Uhrzeit einstellen 5. Heizkurve einstellen Vorlauf max / min 6. Außentemperatur einstellen max / min 7. Raum einstellen max / min 8. Raumeinfluss einstellen
+
+Closing statement: Der Anlagenbetreiber wurde mit der Bedienung der automatischen Holzfeuerungsanlage vertraut gemacht und über die Wirkungsweise und Eigenkontrolle der technischen Sicherheitseinrichtungen unterrichtet. Im Zuge der Unterweisung wurde dem Betreiber der Anlage eine Bedienungsanleitung übergeben. Fields: Datum; Unterschrift des Anlagenbetreibers.
+
+> GAP: The form covers three plant types. It does not say which check items apply to a Pelletsanlage; several (Rückbrandklappe, Raumaustragung, Lüfter V2 Sekundärgebläse, Föhnlüfter, Lichtschranken) name components that do not appear in BA 2008 or MA 2009. See verification.md line 34.
+
+---
+
+# TÜV Prüfbescheinigung SL-P 12 [TÜV 2209092-2-DK, S. 1]
+
+Trilingual certificate (German / English / Danish), TÜV SÜD Landesgesellschaft Österreich, issued Bruck/Mur, 21. September 2009. **Applies to type SL-P 12 only.**
+
+| Field | As printed |
+|---|---|
+| Nummer | 2209092-2-DK |
+| Antragsteller / Hersteller | Lindner & Sommerauer |
+| Produkt | Heizkessel für Holzpellets / boiler for wood pellets / centralvarmekedel for træpiller |
+| Typ | SL-P 12 |
+| Prüfgrundlage | EN 303-5, Klasse 3 |
+| Brennstoff | Holzpellets |
+| Brennstoffzufuhr | automatisch |
+| Grundlage: Prüfbericht | K 14991 / 2.1, 2006-05-10 |
+
+**Prüfergebnis:**
+
+| | Messwert | Anforderung EN 303-5 |
+|---|---|---|
+| **Volllast / nominal load** | 12,3 kW | |
+| CO (10% O₂) | 35 | max. 3000 mg.m⁻³ |
+| OGC (10% O₂) | 2 | max. 100 mg.m⁻³ |
+| Staub / dust (10% O₂) | 16 | max. 150 mg.m⁻³ |
+| Wirkungsgrad / efficiency | 95,0 | min. 73,5 % |
+| **Teillast / part load** | 2,5 kW | |
+| CO (10% O₂) | 45 | max. 3000 mg.m⁻³ |
+| OGC (10% O₂) | 6 | max. 100 mg.m⁻³ |
+| Staub / dust (10% O₂) | 12 | max. 150 mg.m⁻³ |
+| Wirkungsgrad / efficiency | 91,8 | min. 73,5 % |
+
+Die Übereinstimmung der genannten Werte mit den Ergebnissen gemäß dem Prüfbericht wird bestätigt.
+
+> GAP: The Messwert column prints no unit; the unit is printed only in the Anforderung column. Nominal load here is 12,3 kW and efficiency 95,0 / 91,8, where BA 2008 Kap. 3, S. 3 gives Nennleistung 12 and Wirkungsgrad 95,2 / 91,6 for SL-P 12. Kept separately with their own anchors. See verification.md line 35.
+
+---
+
+# Raumfernfühler RTFH4 (EAP electric) [EAP RTFH4, S. 1]
+
+Third-party datasheet: "Raumfernfühler mit Sollwertkorrektur und Betriebswahlschalter RTFH4".
+
+**Anwendung:** Raumfühler für Raumtemperaturüberwachung einschließlich Potentiometer für Fernverstellung mit Mittelstellung zum Erhöhen und Absenken der Kessel- und Vorlauftemperatur.
+
+**Technische Daten:**
+
+| | |
+|---|---|
+| Gehäuse | Kunststoffgehäuse, Farbe weiß |
+| Umgebungstemperatur | +21°C |
+| Sollwertverstellung | +/-5°C |
+| Betriebswahlschalter | Aus / Boiler / Nacht / Automatik / Tag |
+| Störung | LED Rot |
+| Sensor | KTY81-122 |
+| Anschluß | 2-Leiter |
+| Versorgungsspannung | 5V DC für LED |
+| Montage | auf UP-Dose Ø55mm |
+| Schutzart | IP20, Schutzklasse 3 |
+
+**Grundeinstellung:**
+
+| Raumtemp. | Aus | Boiler | Mond | Uhr | Sonne |
+|---|---|---|---|---|---|
+| 21°C | 2365Ω | 2035Ω | 1695Ω | 1035Ω | 1365Ω |
+
+**Achtung:** Bei Sensor Betrieb beträgt die Abweichung des Widerstandswert pro Grad Celsius Raumtemperatur ca. 8Ω auf- bzw. abwärts.
+
+Sketch captions: "Öffnen des Deckels" (photo); "Anschlussbild 0/1 Sensorkreis", 2-Leiter, terminals 1 and 0 across Rx; "Anschlussbild Duo-LED 5V", three terminals of which two are legibly marked G and rt.
+
+> GAP: Nothing on this sheet names Lindner & Sommerauer or the SL-P, and nothing in BA 2008 names the RTFH4. The match with the "Raumgerät" of BA 2008 Kap. 9 (positions Pumpe Aus / Boilerbetrieb / Nachtabsenkung aktiviert / Normalbetrieb / Nachtabsenkung deaktiviert; symbols Mond, Uhr, Sonne; ±5°C selector; contacts 1 and 2) is an inference from similar wording and is not stated in print. Note also that BA 2008 says to connect at "Kontakten 1 und 2" while this sheet labels the sensor terminals 1 and 0. The resistance row is not monotonic (Uhr 1035Ω is below Sonne 1365Ω); transcribed as printed. The third LED terminal label is not legible. See verification.md lines 36 and 37.
 
