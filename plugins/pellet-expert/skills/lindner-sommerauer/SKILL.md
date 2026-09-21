@@ -242,7 +242,7 @@ that on, do not fill it. Then point to the official manual and a technician.
 Before quoting a value, check `verification.md`. If a line covers it, give the
 caveat with the value. Known cases: three conflicting firmware strings,
 Rücklauf SOLL 55° vs 63°C, "Heizung Pumpe EIN bei" default outside its printed
-range, the undefined unit "zs", the "Pause MIN" factory row, "20 mbar".
+range, the undefined unit "zs", "20 mbar".
 
 Numbers inside display boxes in the references are the manual's examples. Only
 the "Standard" column of a Parameterliste is a default, and only the

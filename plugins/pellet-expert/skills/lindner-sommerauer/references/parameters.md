@@ -23,14 +23,15 @@ sections not covered:
   "Anlagenwert" columns of all parameter lists: omitted (installation-specific, handwritten in the scanned copy)
 -->
 
-<!-- Gap-marking convention (PROVISIONAL — plan §7.1 was not available when this
-     file was first filled; replace with the plan's convention when supplied):
-     a blockquote starting with "GAP:" marks a place where the source is silent,
-     cut off, illegible, or skipped per the ingest-document first rule, e.g.
-     > GAP: [what is missing] — [why]. See verification.md line N.
--->
+<!-- Gap-marking convention: a blockquote that starts with "GAP:" marks a place
+     where the source is silent, cut off, illegible, contradictory, or was
+     skipped under the ingest-document first rule. Form:
+     > GAP: [what is missing or uncertain] — [why]. See verification.md line N.
+     A GAP is never filled from another page, another document or general
+     knowledge. It is closed only by a new ingest with its own anchor, and the
+     closing edit says so in place of the marker. -->
 
-<!-- Anchor format (provisional): [SL-P BA 2008, Kap. N, S. M] = chapter N, page M
+<!-- Anchor format: [SL-P BA 2008, Kap. N, S. M] = chapter N, page M
      as printed in the page footer. Display boxes are transcribed as two-line
      code blocks exactly as printed; the numbers in them are the manual's
      example values, not defaults and not any installation's values (Kap. 4,
@@ -1042,7 +1043,9 @@ Aktuelle Leistung d. Saugzuggebläses. / Eingestellt Leistung des Saugzuggebläs
 
 Alle diese Werte werden bei Programmupdates auf Werkeinstellung zurückgesetzt. [S. 3]
 
-> GAP: The "Pause MIN" row reads 40/24/33/15 in the scan. The values are non-monotonic across the model range and the digits are read from a photo; see verification.md before relying on them. Units for the table rows are not repeated in the table (the menu items use zs, s, Min and %).
+The "Pause MIN" row was re-read from the scan at full resolution and is confirmed as printed: 40/24/33/15. It is not monotonic across the model range; that is how the manual prints it. (An earlier GAP marker here is closed; verification.md lines 9 and 40.)
+
+> GAP: Units for the table rows are not repeated in the table (the menu items use zs, s, Min and %).
 
 ---
 

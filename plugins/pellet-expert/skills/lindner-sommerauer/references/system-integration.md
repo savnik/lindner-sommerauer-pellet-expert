@@ -31,21 +31,22 @@ sections not covered:
   Kap. 1 — Einleitung (greeting and blank technician phone field), Personalauswahl und Qualifikation beyond the one sentence quoted: not ingested
   Anhang — Service und Sicherheitstechnik Überprüfung (blank checklist form): not ingested
   Anhang — TRVB H 118 Anhang 2/1, 2/3, 2/4 (Kontrollbuch cover form, filled sample form marked MUSTER, blank monthly form): forms, not transcribed; only their field names are listed
-  SL-P MA 2009 — drawings and photos (store layouts, wall-opening drawing, distributor drawing, dismantling photos, board layout): only printed captions, labels and dimensions transcribed; wire colours on the board drawing not transcribed (legibility, see verification.md)
+  SL-P MA 2009 — drawings and photos (store layouts, wall-opening drawing, distributor drawing, dismantling photos, board layout): only printed captions, labels and dimensions transcribed; wire colours on the board drawing transcribed after a full-resolution re-read
   L&S IB-Protokoll — the filled-in entries of the scanned copy (operator, address, installer, serial number, output, which boxes were ticked, date, signatures): installation-specific, omitted
   TÜV 2209092-2-DK — signatory and company-register block: omitted
   EAP RTFH4 — "Öffnen des Deckels" photo and the two circuit sketches: captions only; manufacturer contact block omitted
   Figures — Kap. 2 cutaway drawing, Kap. 3 system drawing, Kap. 9 room-sensor drawing: not transcribed; only the printed text and captions are
 -->
 
-<!-- Gap-marking convention (PROVISIONAL — plan §7.1 was not available when this
-     file was first filled; replace with the plan's convention when supplied):
-     a blockquote starting with "GAP:" marks a place where the source is silent,
-     cut off, illegible, or skipped per the ingest-document first rule, e.g.
-     > GAP: [what is missing] — [why]. See verification.md line N.
--->
+<!-- Gap-marking convention: a blockquote that starts with "GAP:" marks a place
+     where the source is silent, cut off, illegible, contradictory, or was
+     skipped under the ingest-document first rule. Form:
+     > GAP: [what is missing or uncertain] — [why]. See verification.md line N.
+     A GAP is never filled from another page, another document or general
+     knowledge. It is closed only by a new ingest with its own anchor, and the
+     closing edit says so in place of the marker. -->
 
-<!-- Anchor format (provisional): [SL-P BA 2008, Kap. N, S. M] = chapter N, page M
+<!-- Anchor format: [SL-P BA 2008, Kap. N, S. M] = chapter N, page M
      as printed in the page footer. The manual's own wording is kept in German;
      English headings in parentheses are glosses only. Printed example values on
      display boxes are the manual's examples, not any installation's values
@@ -584,15 +585,15 @@ Board drawing is marked "IPN 80". Fuse positions are printed with ratings 2A, 10
 | 8 | M1 | Saug-Misch-Verteiler Motor 1 (230V) |
 | 9 | M2 | Saug-Misch-Verteiler Motor 2 (230V) |
 | 10 | M3 | Saug-Misch-Verteiler Motor 3 (230V) |
-| 12 | FÜLL | Füllstandssensor |
+| 12 | FÜLL | Füllstandssensor — wire colours printed under the terminal: blau, weiß, braun |
 | 13 | STB | Sicherheitstemperaturbegrenzer |
-| 14 | LAMBDA | Lambdasonde |
-| 15 | DREH | Sensor Brenner zu |
+| 14 | LAMBDA | Lambdasonde — wire colours printed: weiß, weiß/grau, schwarz |
+| 15 | DREH | Sensor Brenner zu — wire colours printed: blau, schwarz, braun |
 | 16 | EXT | Externer Start |
 | 18 | KESSEL | Kesselthermometer |
 | 19 | ABGAS | Abgasfühler |
 
-> GAP: Terminals 11 and 17 do not appear in the printed list or on the drawing. Which circuit each fuse protects is not printed. The wire-colour legends printed under terminals 12, 14 and 15 are too small to read reliably in the scan and are not transcribed. See verification.md line 32.
+> GAP: Terminals 11 and 17 do not appear in the printed list or on the drawing. Which circuit each fuse protects is not printed. The order in which the three colours map to the three pins of each terminal is given only by their left-to-right position in the drawing. See verification.md lines 32 and 42.
 
 Cross-reference, both as printed in BA 2008 Kap. 13: "Der Ausgang 6 kann für einen externen Austragungsmotor … verwendet werden" (S. 1) matches terminal 6 AUST here; "Am Ausgang 16 kann auch ein 70° Sensor installiert werden" (S. 4) refers to terminal 16 EXT here.
 

@@ -53,3 +53,9 @@ Format: `N. | target file, location | what was seen | why uncertain | what would
 38. | system-integration.md, scrub step | L&S IB-Protokoll scanned copy is filled in by hand: operator name, street, town, installer firm, serial number, output, date, two signatures, and ticks | All omitted. The named operator is a private individual; the scan must not be committed or shared. Certificate and test-report numbers on the TÜV sheet were kept because they identify a type approval, not an installation; the signatory's name was dropped | Peter confirms keeping the certificate number is acceptable
 39. | verification.md line 2 | Earlier open question on the installed model | The protocol and certificate supplied in this batch let Peter answer it; the answer is deliberately not written into this repo | Peter decides whether the installed model may be recorded anywhere public
 
+## 2026-09-21 — re-reads of the original scans at full resolution
+
+40. | parameters.md, Kap. 12 S. 3 (closes line 9) | "Pause MIN" factory row | Re-read at full resolution: 40/24/33/15 is clearly printed. The non-monotonic sequence is the manual's, not a misread | Closed as a reading. Whether the manual itself is right is a question for the manufacturer
+41. | parameters.md, Kap. 5 S. 3 (closes line 15; narrows line 1) | "Version 080325.L" | Re-read at full resolution: the last character is a capital L in both example boxes | Closed as a reading. Line 1 stays open: footer "Pell 080325.1" and example "080325.L" are both as printed, and the installed version is still unknown
+42. | system-integration.md, SL-P MA 2009 scan S. 12 (partly closes line 32) | Wire colours under terminals 12, 14, 15 | Re-read at full resolution: FÜLL blau / weiß / braun; LAMBDA weiß / weiß-grau / schwarz; DREH blau / schwarz / braun | Closed as a reading. Still open from line 32: terminals 11 and 17, fuse assignment
+

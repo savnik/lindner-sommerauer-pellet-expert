@@ -55,14 +55,17 @@ or from your own training knowledge. The gap is the deliverable.
    explanations, context, or advice that is not on the page.
 
 5. **Format every anchor.** Each fact you add gets an anchor that lets the
-   skill cite it: document, section, and page as printed. Follow the anchor
-   format already used in the target file; if the file has none yet, use
-   `[doc: <short document name>, §<section>, p.<page>]` and note that the
-   format is provisional.
+   skill cite it: document, section, and page as printed. The format is
+   `[<short document name>, Kap. <chapter>, S. <page>]` with chapter and page
+   as printed, e.g. `[SL-P BA 2008, Kap. 7, S. 3]`. For an unpaginated
+   document use `scan S. <n>` and say so in the manifest. Each new document
+   gets a short name, declared in the manifest as `source document N`.
 
 6. **Write gaps down explicitly.** Wherever the document is silent, cut off,
-   or skipped per the first rule, leave a gap marker in place using the
-   gap-marking convention at the top of the reference file. A gap that is
+   or skipped per the first rule, leave a gap marker in place: a blockquote
+   starting with `> GAP:` that says what is missing, why, and which
+   `verification.md` line covers it. When a later ingest closes a gap, replace
+   the marker with a sentence saying it was closed and by which document. A gap that is
    not written down is indistinguishable from coverage.
 
 7. **Append uncertain readings to `verification.md`** in the skill
