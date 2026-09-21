@@ -2,6 +2,10 @@
 # live OUTSIDE the repo tree. They are never committed here, scrubbed or not.
 # The ingest-document skill reads them from wherever Peter keeps them.
 
+# Installation records are private and live in the owner's working directory.
+# Ignored here so one created while developing in this repo is never committed.
+pellet-installations/
+
 # macOS
 .DS_Store
 ._*

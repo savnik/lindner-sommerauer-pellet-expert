@@ -23,10 +23,26 @@ Owners and installers of a Lindner & Sommerauer pellet system who want a
 second reading of the manual, a way to work out which parameter does what,
 or help describing a problem before calling a technician.
 
+## It learns your installation, privately
+
+The plugin itself contains only common knowledge taken from the manufacturer's
+documents. What is particular to your system (model, firmware, buffer and
+sensor layout, the values actually set, errors and maintenance) goes into an
+installation record: a plain Markdown file at `pellet-installations/<label>.md`
+in your own working directory. The skill reads it before answering, proposes
+additions as you talk, and writes only when you say yes.
+
+The record stays on your machine. It is never sent anywhere by the plugin and
+nothing from it is ever added to this repository. It is meant to hold no
+names, addresses or serial numbers. You can read, edit or delete it at any time.
+
 ## Status: beta
 
-Version 0.1.0 is scaffolding. The reference files are empty and the skill
-does not yet contain any pellet-system content. Do not rely on it.
+Version 0.1.0 is an early beta. The references cover the SL-P 8/12/15/25
+operating manual (Modell 2008), the SL-P installation manual (05-2009) and a
+few supporting sheets, in the manufacturer's German. The safety, audience and
+routing sections of the skill are not written yet, and 39 uncertain readings
+are open in `verification.md`. Do not rely on it.
 
 Maintained by Peter Savnik in spare time. Issues and corrections welcome;
 response time is best-effort.
@@ -49,7 +65,7 @@ For a local checkout:
 
 - `plugins/pellet-expert/` — the plugin users install
 - `.claude/skills/` — development tooling; never installed for users
-- `evals/` — frozen evaluation questions per set
+- `evals/` — frozen evaluation questions per set, with a fictional fixture record
 
 ## Licence
 
