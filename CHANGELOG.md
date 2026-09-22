@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-22
+
+### Added
+
+- `feedback` skill: reports a wrong, missing, unsafe or confusing answer as a
+  GitHub issue. Shows the full text first, posts only on a yes, via the GitHub
+  CLI or a pre-filled link, from the user's own account. Excludes identifiers
+  and installation-record contents. Issue template and labels in the repo.
+
+### Changed
+
+- Data-handling rule 1 and the privacy policy name the feedback skill as the
+  single exception to "nothing leaves the machine".
+
 ## [0.1.1] - 2026-09-22
 
 ### Added
@@ -64,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Eval sets: out-of-scope, safety, personal-data (written); integration and
   manual-reasoning (stubs).
 
-[Unreleased]: https://github.com/savnik/lindner-sommerauer-pellet-expert/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/savnik/lindner-sommerauer-pellet-expert/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/savnik/lindner-sommerauer-pellet-expert/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/savnik/lindner-sommerauer-pellet-expert/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/savnik/lindner-sommerauer-pellet-expert/releases/tag/v0.1.0

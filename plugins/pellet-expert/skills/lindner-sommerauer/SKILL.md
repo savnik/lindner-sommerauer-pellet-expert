@@ -12,7 +12,10 @@ description: "Expert on Lindner & Sommerauer (also written Lindner-Sommerauer, L
 
 1. **Nothing leaves the user's machine through this skill.** Do not send,
    upload, post or otherwise transmit anything the user tells you or shows you
-   about their home or heating system.
+   about their home or heating system. The one exception in the plugin is the
+   separate `feedback` skill, which posts a public GitHub issue about the
+   plugin itself, only after showing the exact text and getting a yes, and
+   never with installation-record contents or identifiers.
 2. **Do not collect identifiers.** Never ask for a name, address, phone
    number, serial number, installer or company name. None is needed to answer
    a heating question. If the user volunteers one, do not store it and do not
@@ -270,6 +273,7 @@ chapter heading or the German term, then read that section.
 | Wiring, terminals, suction distributor, room sensor resistances | `system-integration.md`: Hauptsteuerung (SL-P MA 2009), EAP RTFH4 |
 | Boiler room, pellet store, fill pipes, chimney, draught | `system-integration.md`: SL-P MA 2009 sections and BA 2008 Kap. 1 |
 | Commissioning, first start | `system-integration.md` Kap. 4 and the L&S IB-Protokoll form |
+| The user says an answer was wrong, unhelpful or unsafe, or asks how to report a problem | Offer the `feedback` skill (`/pellet-expert:feedback`). Do not argue the point first; a report is more useful than a defence. |
 | Switching off, summer, season end, going away | There is no shutdown chapter, so assemble the cases and ask which is meant. Stop and start: `parameters.md` Kap. 4 (Ein/Aus keys), fan run-on in Kap. 13 (V1 Nachlauf). Main switch and what it cuts: `system-integration.md` Kap. 2, Pos. 3. Before maintenance: Kap. 1 Sicherheit. Summer: hot water only via Boilerbetrieb or Uhr-Boilerbetrieb (`parameters.md` Kap. 7–8), Rostschutz (Kap. 13), outdoor-temperature cut-off "Pumpe AUS bei" and Frostschutz (Kap. 9). Season end: the Putz- und Reinigungsanleitung. |
 | Cleaning, ash, maintenance intervals | `system-integration.md` Anhang Putz- und Reinigungsanleitung, TRVB H 118; ash counter in `parameters.md` Kap. 5 |
 | Poor output, not getting warm | `system-integration.md` Kap. 16 first, then the record, then the relevant menus |

@@ -1,13 +1,20 @@
 # Privacy policy
 
 Applies to the `pellet-expert` plugin and its `lindner-sommerauer` skill.
-Last updated 2026-09-22.
+Last updated 2026-09-22 (feedback skill added).
 
 ## What the plugin collects
 
-Nothing. The plugin contains no code that runs on its own, no hooks, no
-network calls, no analytics and no telemetry. It consists of instructions and
-reference text that Claude reads locally.
+Nothing on its own. The plugin contains no code that runs by itself, no hooks,
+no analytics and no telemetry. It consists of instructions and reference text
+that Claude reads locally.
+
+The one way anything leaves your machine is the `feedback` skill, which you
+invoke to report a problem with the plugin. It drafts a public GitHub issue,
+shows you the complete text, and posts it only when you say yes, from your own
+GitHub account. It is instructed to leave out names, addresses, serial numbers,
+installer names, file paths and the contents of your installation record. You
+can edit the text before it is posted, or decline.
 
 ## What it stores, and where
 

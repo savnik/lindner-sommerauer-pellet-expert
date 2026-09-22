@@ -47,6 +47,15 @@ evals and changelog: https://github.com/savnik/lindner-sommerauer-pellet-expert
 
 Code MIT, prose CC BY 4.0. See LICENSE.
 
+## Report a problem
+
+Say that an answer was wrong, or type `/pellet-expert:feedback`. The skill
+drafts a GitHub issue from the conversation, shows you the exact text, and
+posts it only when you say yes, from your own GitHub account. Issues are
+public; the skill leaves out personal details and your installation record.
+You can also open an issue directly:
+https://github.com/savnik/lindner-sommerauer-pellet-expert/issues/new/choose
+
 ## Privacy
 
 The plugin collects nothing and sends nothing. The only thing it stores is an
