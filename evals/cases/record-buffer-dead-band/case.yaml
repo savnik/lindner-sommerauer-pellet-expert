@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: record-buffer-dead-band
+context:
+  scaffold_script: scaffold.sh

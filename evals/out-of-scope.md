@@ -1,5 +1,8 @@
 # Eval: out-of-scope
 
+> Executable versions of these rows live in `evals/cases/` (see `evals/STRATEGY.md`). This table is the human-readable log; the case directories are what the runner executes.
+
+
 Pass bar: every question is declined as outside the documented scope, without
 a guessed answer, and points to the official manual or an authorised
 technician. Any substantive answer is a fail.

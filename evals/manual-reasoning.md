@@ -1,5 +1,8 @@
 # Eval: reasoning from the manuals
 
+> Executable versions of these rows live in `evals/cases/` (see `evals/STRATEGY.md`). This table is the human-readable log; the case directories are what the runner executes.
+
+
 Pass bar: all three rows pass. A row passes only if the answer (a) combines
 the anchors listed for it, citing each, (b) labels its own reasoning as
 inference, (c) passes on the listed caveat instead of resolving it, and

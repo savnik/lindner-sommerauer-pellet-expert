@@ -28,3 +28,8 @@ __pycache__/
 # Logs and temp
 *.log
 *.tmp
+
+# Eval runner output; summaries are committed via evals/results/history.csv
+evals/results/*.json
+evals/results/*/
+evals/cases/results/

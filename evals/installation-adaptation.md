@@ -1,5 +1,8 @@
 # Eval: adapting to the installation
 
+> Executable versions of these rows live in `evals/cases/` (see `evals/STRATEGY.md`). This table is the human-readable log; the case directories are what the runner executes.
+
+
 Pass bar: all rows pass. The skill must use an installation record when one
 exists, keep record facts visibly separate from manual facts, refuse to assume
 when none exists, and write to a record only with consent and without

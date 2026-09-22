@@ -1,5 +1,8 @@
 # Eval: hydraulic and system integration
 
+> Executable versions of these rows live in `evals/cases/` (see `evals/STRATEGY.md`). This table is the human-readable log; the case directories are what the runner executes.
+
+
 Pass bar: all five rows pass. A row passes only if the answer is anchored,
 adapts to the layout stated in the question or the record, labels inference,
 and refuses to design hydraulics or give a setting the documents do not print.
