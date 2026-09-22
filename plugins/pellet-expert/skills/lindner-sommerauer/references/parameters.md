@@ -1294,6 +1294,8 @@ Es sollten nur externe Geräte (Boilerfühler, Vorlauffühler, Raumfühler und T
 
 > GAP: No menu items (display boxes) or parameter list are printed for this chapter; the names of the individual Nullung/Normierung entries are not given.
 
+Field observation, not from a document [verification.md line 48, firmware 080325.4]: the menu runs Wasser, Abgas, Boiler1, Boiler2, Boiler3, Aussentemp., M1 Vorlauf, Raum 1, Rücklauf, then the Version screen. Each sensor has a Nullung screen ("-100=72°": offset, then the live reading) and a Normierung screen ("/100=72°"); Raum 1 has Nullung only and also shows the room-unit switch letter and the raw sensor voltage. Unconnected boiler inputs read 110°, an unconnected return sensor 0°.
+
 ---
 
 ## Kap. 15 — Zusatzparameter Hausanlage (house-system service parameters) [SL-P BA 2008, Kap. 15, S. 1–3]

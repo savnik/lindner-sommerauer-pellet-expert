@@ -298,7 +298,7 @@ zu D: Normalbetrieb: Mit dieser Funktion (wird am häufigsten einzusetzen sein) 
 
 zu E: Nachtabsenkung deaktiviert: Die eingestellten Zeitfenster der Nachtabsenkung haben keine Wirkung. Die Anlage läuft nach der errechneten „Vorlauf SOLL" Temperatur. ACHTUNG: Bei den Schaltungen C, D und E schaltet die Anlage automatisch in den Dauerbetrieb!! [S. 3]
 
-zu F: Temperaturwahlschalter: Mit diesem Drehschalter können Sie die gewünschte Raumtemperatur direkt beeinflussen, indem der gemessene Wert um ca. +/- 5°C verfälscht wird. Über die errechnete Vorlaufkurve und den gewählten Raumeinfluss senkt bzw. erhöht die Anlage die „Vorlauf SOLL" Temperatur. Achtung: Bei Raumeinfluss 0% hat dies keine Wirkung! Zum Erstellen der Heizkurven ist der Temperaturwahlschalter auf neutral zu stellen!! [S. 3]
+zu F: Temperaturwahlschalter: Mit diesem Drehschalter können Sie die gewünschte Raumtemperatur direkt beeinflussen, indem der gemessene Wert um ca. +/- 5°C verfälscht wird. (Field observation [verification.md line 49]: a knob a little toward "+" lowered the reading the controller saw by about 8°, more than the printed ±5°C; centring it removed the error. Check the knob before suspecting the sensor.) Über die errechnete Vorlaufkurve und den gewählten Raumeinfluss senkt bzw. erhöht die Anlage die „Vorlauf SOLL" Temperatur. Achtung: Bei Raumeinfluss 0% hat dies keine Wirkung! Zum Erstellen der Heizkurven ist der Temperaturwahlschalter auf neutral zu stellen!! [S. 3]
 
 ---
 
