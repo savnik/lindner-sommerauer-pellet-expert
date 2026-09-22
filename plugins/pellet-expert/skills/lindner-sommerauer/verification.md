@@ -5,6 +5,23 @@ Never edit or delete existing lines; add a new line that references the old one 
 
 Format: `N. | target file, location | what was seen | why uncertain | what would resolve it`
 
+## Status index (maintained; the only part of this file that is edited in place)
+
+Lines are never edited. A later line can close or narrow an earlier one. Check
+here before citing a line as open.
+
+| Line | Status | By |
+|---|---|---|
+| 1 | narrowed (installed version can differ from the manual's; both strings confirmed as printed) | 41 |
+| 5 | open (source conflict 55° vs 63°C; a field reading showed the 63°C default on one controller) | — |
+| 7 | narrowed (default 55° is real; the printed range is the misprint) | 44 |
+| 9 | closed (40/24/33/15 confirmed as printed) | 40 |
+| 11 | closed (1 Verbrennung, 2 Service, 3 Fühlerabgleich, 4 Hausanlage) | 43 |
+| 15 | closed (capital L confirmed) | 41 |
+| 19 | closed (maximum displays as the word AUS) | 45 |
+| 32 | partly closed (wire colours read; terminals 11/17 and fuse assignment still open) | 42 |
+| all others | open | — |
+
 ## 2026-09-13 — SL-P BA 2008 (merged scan, 55 pages)
 
 1. | both files, manifest `firmware` | Page footers print "Pell 080325.1"; the Kap. 5 S. 3 and Kap. 8 S. 1 example display boxes print "Version 080325.L"; the cover of the scanned copy carries a handwritten version string that differs from both | Three different version strings for the same document; which firmware the installed unit runs is not stated in print | Read the Version line on the actual controller display and compare with the footer string
