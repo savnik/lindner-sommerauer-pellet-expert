@@ -58,7 +58,9 @@ Panel layout (from the photo): a two-line display at the top (example shown: `Ke
 
 Access to the Zusatzparameter menus (from Kap. 12, 13, 15, 14): einmaliges gleichzeitiges Drücken von V und Z → Zusatzparameter Verbrennung [Kap. 12, S. 1]; zweimaliges gleichzeitiges Drücken von V und Z → Zusatzparameter Service [Kap. 13, S. 1] and, as printed identically, Zusatzparameter Hausanlage [Kap. 15, S. 1]; gleichzeitiges Drücken von V und Z aus dem Hauptmenü → Zusatzparameter Fühlerabgleich [Kap. 14, S. 1]. Zurück kommen Sie durch Drücken einer beliebigen Betriebsarttaste. Den Wert ändern Sie mit der „+" oder „-" Taste.
 
-> GAP: The manual gives the same key sequence ("zweimaliges gleichzeitiges Drücken") for both Zusatzparameter Service (Kap. 13) and Zusatzparameter Hausanlage (Kap. 15), and "gleichzeitiges Drücken … aus dem Hauptmenü" for Fühlerabgleich (Kap. 14) without a count. The exact navigation between these three levels is not stated. See verification.md.
+> GAP: The manual gives the same key sequence ("zweimaliges gleichzeitiges Drücken") for both Zusatzparameter Service (Kap. 13) and Zusatzparameter Hausanlage (Kap. 15), and "gleichzeitiges Drücken … aus dem Hauptmenü" for Fühlerabgleich (Kap. 14) without a count. The exact navigation between these three levels is not stated in the document. See verification.md.
+
+Field observation, not from a document [verification.md line 43, firmware 080325.4]: repeated presses of V and Z together step through the levels in the order Verbrennung (1), Service (2), Fühlerabgleich (3), Hausanlage (4), each opening with a title screen "ZUSATZPARAMETER / <name>". Quote as an observation on that firmware, not as the manual's instruction.
 
 ---
 
