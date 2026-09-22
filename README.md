@@ -57,6 +57,14 @@ response time is best-effort.
 /plugin install pellet-expert@savnik
 ```
 
+Submitted to Anthropic's community marketplace on 2026-09-22. Once listed,
+it can also be installed with:
+
+```
+/plugin marketplace add anthropics/claude-plugins-community
+/plugin install pellet-expert@claude-community
+```
+
 For a local checkout:
 
 ```
