@@ -259,7 +259,7 @@ chapter heading or the German term, then read that section.
 |---|---|
 | Error or fault message (F-number or text) | `parameters.md` Kap. 17. Then Kap. 11 Handbetrieb for the tests it refers to. Messages that are not F-numbers ("Aschenlade entleeren", "Anlage AUS durch AT", "Abschaltung durch UWP Sperrzeit", Prüfbetrieb messages) are in the chapter of their menu. |
 | What a parameter means, its range, its default | `parameters.md`, the chapter of its menu, then that chapter's Parameterliste. Factory combustion values: Kap. 12 table, by model. |
-| How to reach a menu, what the keys do | `parameters.md` Kap. 4. Mind verification.md line 11 on the service-menu key sequences. |
+| How to reach a menu, what the keys do | `parameters.md` Kap. 4. The service-menu key sequence is a field observation there (verification.md line 43), not the manual's text. |
 | Operating modes, timers, night setback, heating curve | `parameters.md` Kap. 5–9 |
 | Buffer tank, two-sensor operation, return temperature raising, mixer on M1, room unit behaviour, second stove, external start | `system-integration.md` Kap. 7, 9, 13, 15, plus the matching menu items in `parameters.md` |
 | Wiring, terminals, suction distributor, room sensor resistances | `system-integration.md`: Hauptsteuerung (SL-P MA 2009), EAP RTFH4 |
