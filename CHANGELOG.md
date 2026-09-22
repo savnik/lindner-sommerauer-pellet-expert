@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- All five eval sets run at least once (proxy runs); all rows pass. A live
+  test with a real record passed. Verification log gained a status index so
+  closed lines are not cited as open doubt.
+
 - Eval sets completed: five owner-written integration questions and three
   manual-reasoning questions, with pass bars. Integration set passes in a
   proxy run after one skill fix (routing row for switching off and seasonal
