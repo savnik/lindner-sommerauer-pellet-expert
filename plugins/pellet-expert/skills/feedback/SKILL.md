@@ -59,6 +59,15 @@ Labels, pick one primary:
 Add `safety` as a second label whenever safety is involved, even if the
 primary is different.
 
+## Reports about things outside the plugin's scope
+
+If the problem is that the plugin does not cover another manufacturer, another
+Lindner & Sommerauer product line, or a topic the main skill lists as out of
+scope, say so first: that is by design, not a fault. Then ask whether the user
+still wants to file it as a coverage request. Such requests are useful to the
+maintainer as a signal of demand, so file it if they say yes, labelled
+`missing-coverage`, with one sentence noting it is outside the current scope.
+
 ## How to post
 
 Try, in this order, and tell the user which one you are using:
