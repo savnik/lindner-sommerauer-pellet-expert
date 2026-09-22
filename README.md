@@ -74,3 +74,8 @@ For a local checkout:
 
 Code is MIT. Prose (skill text, reference files, evals, this README) is
 CC BY 4.0. See `LICENSE`.
+
+## Privacy
+
+The plugin collects nothing and sends nothing. The only thing it stores is an
+installation record you ask for, on your own machine. See [PRIVACY.md](PRIVACY.md).

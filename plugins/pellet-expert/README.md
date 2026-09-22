@@ -46,3 +46,8 @@ evals and changelog: https://github.com/savnik/lindner-sommerauer-pellet-expert
 ## Licence
 
 Code MIT, prose CC BY 4.0. See LICENSE.
+
+## Privacy
+
+The plugin collects nothing and sends nothing. The only thing it stores is an
+installation record you ask for, on your own machine. See [PRIVACY.md](PRIVACY.md).
