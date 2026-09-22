@@ -548,7 +548,7 @@ ständig abgesenkt betreiben [S. 4]
 Modul            fehlt
 Mischerkreis       EIN
 ```
-Sind keine weiteren Module installiert oder ist die Busverbindung unterbrochen, so wird dies hier angezeigt. [S. 4]
+Sind keine weiteren Module installiert oder ist die Busverbindung unterbrochen, so wird dies hier angezeigt. [S. 4] Field observation [verification.md line 46]: the second line still reads "Mischerkreis EIN" on a circuit without a module.
 
 ```
 Uhrzeit          21:43
@@ -682,7 +682,7 @@ Ist die Anlage aufgrund der Außentemperatur abgeschaltet, so erscheint diese al
 HZ Nachtabschalt.  AUS
 UWP Freigabe     00:00
 ```
-Anzeige: Aktueller Status EIN/AUS / Zeit, wann die Heizkreispumpe einschalten soll. [S. 7]
+Anzeige: Aktueller Status EIN/AUS / Zeit, wann die Heizkreispumpe einschalten soll. [S. 7] Field observation [verification.md line 47]: the display shows a "*" between the label and the time; not explained in the manual.
 
 ```
 HZ Nachtabschalt.  AUS
@@ -738,6 +738,8 @@ Diese Werte können für jeden Wochentag getrennt vergeben werden (Mo–So table
 | UWP Freigabe | Freigabe lt. Außentemp. | -55 bis +50°C | -50°C |
 
 > GAP: "Heizung Pumpe EIN bei" has Standard 55°C but a printed Einstellbereich of 65 bis 100°C — the default lies outside the printed range. Transcribed as printed; see verification.md.
+
+Field observation, not from a document [verification.md line 44, firmware 080325.4]: a controller displayed 55° for this item, so the printed default is real and the printed range is the misprint. The actual range remains unknown.
 
 > GAP: The "Absenkzeiten" are named "Tag 1/2 EIN/AUS" in the menu (S. 5) but "Nacht1/2 EIN/AUS" in the parameter list (S. 8). Transcribed as printed; the mapping between the two names is not stated.
 
@@ -1396,6 +1398,8 @@ Modul OK
 | Mischerlaufzeit | Schaltzeit Pumpe AUS | 0 bis 4999 / Aus | 300 sec |
 
 > GAP: "Mischerlaufzeit" Einstellbereich is printed "0 bis 4999 / Aus" while the text on S. 2 says "5000 Sekunden (AUS)". "RL-Pumpe EIN bei" Standard 55°C differs from the display example "Pumpe EIN bei 40°" on S. 1, and "Rücklauf SOLL" Standard 63°C differs from the display example 55° and from Kap. 1, S. 5 ("auf 55° einzustellen"). Transcribed as printed; see verification.md.
+
+Field observation [verification.md line 45, firmware 080325.4]: at the maximum setting the display shows the word "AUS" instead of a number, matching the table's "/ Aus".
 
 ---
 
