@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - Unreleased
+## [0.1.0] - 2026-09-22
 
 ### Added
 
@@ -53,3 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Development skill `ingest-document`.
 - Eval sets: out-of-scope, safety, personal-data (written); integration and
   manual-reasoning (stubs).
+
+[Unreleased]: https://github.com/savnik/lindner-sommerauer-pellet-expert/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/savnik/lindner-sommerauer-pellet-expert/releases/tag/v0.1.0

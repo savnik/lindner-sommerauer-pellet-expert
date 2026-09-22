@@ -38,7 +38,7 @@ names, addresses or serial numbers. You can read, edit or delete it at any time.
 
 ## Status: beta
 
-Version 0.1.0 is an early beta. The references cover the SL-P 8/12/15/25
+Version 0.1.0 is the first public release and an early beta. The references cover the SL-P 8/12/15/25
 operating manual (Modell 2008), the SL-P installation manual (05-2009) and a
 few supporting sheets, in the manufacturer's German. The skill checks for
 danger signals first, never assumes your model, cites the document and page
