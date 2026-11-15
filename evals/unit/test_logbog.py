@@ -145,6 +145,12 @@ class Validate(Base):
         code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
         self.assertTrue(any("phone" in w["message"] for w in res["warnings"]))
 
+    def test_dates_in_note_are_not_phone_numbers(self):
+        text = self.with_row("Service done",
+                             "| 2025-11-12 | WT | cleaned | | | ok | owner | O | corrects the row 2025-02-11 |")
+        code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
+        self.assertFalse(any("phone" in w["message"] for w in res["warnings"]))
+
     def test_anchor_numbers_are_not_identifiers(self):
         code, res = run("validate", "--today", TODAY)
         self.assertFalse(any("phone" in w["message"] for w in res["warnings"]))
@@ -226,6 +232,24 @@ class Status(Base):
     def test_hours_trigger(self):
         t = self.states(TODAY)["LAMBDA"]
         self.assertEqual((t["due_at_betrieb_std"], t["hours_left"]), (1050, 750))
+
+    def test_ash_counter_is_zero_after_reset(self):
+        text = self.with_row("Readings", "| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |")
+        _, res = run("status", "--today", TODAY, text=text, tmp=self.tmp)
+        t = {t["id"]: t for t in res["tasks"]}["ASCHE"]
+        self.assertEqual((t["counter_value_h"], t["hours_to_message"], t["state"]), (0, 150, "ok"))
+        self.assertIn("reset to 0 on 2025-11-10", t["note"])
+
+    def test_ash_reading_after_reset_is_used_as_read(self):
+        text = self.with_row("Readings", "| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |")
+        text = text.replace("| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |",
+                            "| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |\n"
+                            "| 2025-11-14 | | 40:00 | | | | | | D | |")
+        _, res = run("status", "--today", TODAY, text=text, tmp=self.tmp)
+        t = {t["id"]: t for t in res["tasks"]}["ASCHE"]
+        self.assertEqual((t["counter_read_on"], t["counter_value_h"], t["hours_to_message"]),
+                         ("2025-11-14", 40, 110))
+        self.assertIn("as read on 2025-11-14", t["note"])
 
     def test_ash_counter(self):
         t = self.states(TODAY)["ASCHE"]
