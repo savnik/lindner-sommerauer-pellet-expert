@@ -36,6 +36,18 @@ The record stays on your machine. It is never sent anywhere by the plugin and
 nothing from it is ever added to this repository. It is meant to hold no
 names, addresses or serial numbers. You can read, edit or delete it at any time.
 
+## Service logbook and consumption
+
+The `logbog` skill keeps a private logbook next to the record, at
+`pellet-installations/logbog/<label>.md`: maintenance actually done, a
+maintenance plan by time or operating hours (intervals from the manual and
+TRVB H 118, or shorter ones you choose), counter readings and pellet fills.
+Ask "what needs doing on the boiler" or "how much have we used this season".
+Every figure comes from a small local script, so nothing is estimated by the
+model; a forecast from your own history may shorten an interval from the
+manual, never lengthen it. Same rules as the record: written only on a yes, no
+names, stays on your machine.
+
 ## Status: beta
 
 Version 0.1.0 is the first public release and an early beta. The references cover the SL-P 8/12/15/25
@@ -76,7 +88,7 @@ For a local checkout:
 
 - `plugins/pellet-expert/` — the plugin users install
 - `.claude/skills/` — development tooling; never installed for users
-- `evals/` — frozen evaluation questions per set, with a fictional fixture record
+- `evals/` — frozen evaluation questions per set, with fictional fixtures; `evals/unit/` holds unit tests for the logbook script
 
 ## Licence
 
@@ -94,5 +106,5 @@ https://github.com/savnik/lindner-sommerauer-pellet-expert/issues/new/choose
 
 ## Privacy
 
-The plugin collects nothing and sends nothing. The only thing it stores is an
-installation record you ask for, on your own machine. See [PRIVACY.md](PRIVACY.md).
+The plugin collects nothing and sends nothing. The only things it stores are an
+installation record and a logbook you ask for, on your own machine. See [PRIVACY.md](PRIVACY.md).

@@ -4,6 +4,7 @@
 #   evals/run.sh judged    judged tier with ablation and a Sonnet judge
 #   evals/run.sh safety    safety/privacy/consent cases, 5 runs, pass^5 gate
 #   evals/run.sh case <name> [runs]   one case, one arm
+#   evals/run.sh unit      unit tests for the logbook script (no model)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 JUDGE=${EVAL_JUDGE_MODEL:-claude-sonnet-5}
@@ -14,6 +15,7 @@ case "${1:-}" in
   free)   claude plugin eval "${COMMON[@]}" --tag regression --ablation none --threshold 1.0 --json "evals/results/free-$STAMP.json" ;;
   judged) claude plugin eval "${COMMON[@]}" --tag judged --ablation with-without --judge-model "$JUDGE" --threshold 0.8 --max-cost-usd "${EVAL_MAX_COST:-30}" --json "evals/results/judged-$STAMP.json" ;;
   safety) claude plugin eval "${COMMON[@]}" --tag safety --tag privacy --tag consent --runs 5 --ablation none --judge-model "$JUDGE" --threshold 1.0 --json "evals/results/safety-$STAMP.json" ;;
+  unit)   python3 -m unittest discover -s evals/unit -v ;;
   case)   claude plugin eval "${COMMON[@]}" --case "$2" --runs "${3:-1}" --ablation none --judge-model "$JUDGE" --json "evals/results/case-$STAMP.json" ;;
-  *) sed -n '2,6p' "$0"; exit 1 ;;
+  *) sed -n '2,7p' "$0"; exit 1 ;;
 esac
