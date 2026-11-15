@@ -49,12 +49,19 @@ Counter readings and pellet fills. One row per occasion.
   words ("full", "to the mark"). Two fills that end at the same level give an
   exact consumption figure for the time between them; anything else is marked
   approximate.
+- Measure the level the same way every time. One way: before filling, run
+  the suction manually so the boiler's own hopper is full, then fill the
+  store and read the level. This is an owner practice, not printed in the
+  manual. A fill where it was not done says so in Note.
+- Pellet product: the brand and product name on the sack ("ENplus A1, brand
+  X"), so a change in consumption can be tied to a change of pellets. Not the
+  shop or supplier. Optional column; an older logbook without it stays valid.
 - Event: "reset Betrieb-STD" or "reset Aschenlade" when a counter was set to
   zero. The counter values in that row are the values just BEFORE the reset;
   leave them empty if they were not read, and the script will mark a gap.
 
-| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Event | Source | Note |
-|---|---|---|---|---|---|---|---|---|---|
+| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Pellet product | Event | Source | Note |
+|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Service done
 

@@ -84,6 +84,15 @@ class Validate(Base):
             code = logbog.main(["validate", str(TEMPLATE), "--json", "--today", TODAY])
         self.assertEqual(code, 0, out.getvalue())
 
+    def test_template_row_with_pellet_product_is_valid(self):
+        text = TEMPLATE.read_text(encoding="utf-8")
+        header = "| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Pellet product | Event | Source | Note |\n|---|---|---|---|---|---|---|---|---|---|---|\n"
+        self.assertIn(header, text)
+        text = text.replace(header, header + "| 2025-11-01 | | | 90 | | | full | Brand X premium | | O | |\n")
+        code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
+        self.assertEqual(code, 0, res["errors"])
+        self.assertEqual(res["counts"]["readings"], 1)
+
     def test_inferred_row_is_ignored(self):
         code, res = run("validate", "--today", TODAY)
         self.assertEqual(res["counts"]["readings"], 8)  # the I row is not counted

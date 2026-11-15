@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-15
+
+### Added
+
+- Logbook template: optional "Pellet product" column in Readings (brand and
+  product from the sack, never the shop), so a change in consumption can be
+  tied to a change of pellets. Logbooks without the column stay valid.
+- Logbook template and `logbog` skill: read the fill level the same way every
+  time, for example by running the suction manually before filling so the
+  boiler's hopper is full. Labelled as an owner practice, not from the manual,
+  with the Handbetrieb safety lines.
+
 ## [0.3.0] - 2026-11-15
 
 ### Added
