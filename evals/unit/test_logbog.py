@@ -240,6 +240,17 @@ class Status(Base):
         self.assertEqual((t["counter_value_h"], t["hours_to_message"], t["state"]), (0, 150, "ok"))
         self.assertIn("reset to 0 on 2025-11-10", t["note"])
 
+    def test_ash_reading_after_reset_is_used_as_read(self):
+        text = self.with_row("Readings", "| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |")
+        text = text.replace("| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |",
+                            "| 2025-11-10 | | 120:00 | | | | | reset Aschenlade | D | |\n"
+                            "| 2025-11-14 | | 40:00 | | | | | | D | |")
+        _, res = run("status", "--today", TODAY, text=text, tmp=self.tmp)
+        t = {t["id"]: t for t in res["tasks"]}["ASCHE"]
+        self.assertEqual((t["counter_read_on"], t["counter_value_h"], t["hours_to_message"]),
+                         ("2025-11-14", 40, 110))
+        self.assertIn("as read on 2025-11-14", t["note"])
+
     def test_ash_counter(self):
         t = self.states(TODAY)["ASCHE"]
         self.assertEqual((t["hours_to_message"], t["hours_to_F20"]), (60, 110))
