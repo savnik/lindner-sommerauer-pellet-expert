@@ -103,6 +103,14 @@ precedence, and this skill is not affiliated with the manufacturer.
   before the reset: leave it empty; the script marks a gap.
 - Pellet fills: ask for "Level after" if the owner did not say it. Two fills
   ending at the same level are what make an exact consumption figure.
+- The level is only comparable if it is read the same way each time. When a
+  logbook is started, or the owner asks, suggest one fixed way, for example
+  running the suction manually before filling so the boiler's hopper is full.
+  Say it is an owner practice, not printed in the manual, and give the
+  Handbetrieb lines from Safety. A fill where it was skipped gets a Note.
+- Pellet product: ask for it at the first fill and when it may have changed,
+  and put it in "Pellet product" (or Note, in a logbook without that column).
+  Brand and product name from the sack only; never the shop or supplier.
 - An error message (F-code) gets a Service done row with Action
   "fault cleared" and the code, and the same event belongs in the
   installation record's Events table, offered as a separate row. What the code
