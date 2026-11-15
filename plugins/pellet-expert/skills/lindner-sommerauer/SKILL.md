@@ -127,7 +127,9 @@ Do this before answering any question that depends on the system in front of
 the user. Almost every question does.
 
 1. **Look for an installation record.** Check `pellet-installations/*.md` in
-   the current working directory, or a path the user gives. One record: read
+   the current working directory, or a path the user gives. Files under
+   `pellet-installations/logbog/` are logbooks, not records; the `logbog`
+   skill keeps them. One record: read
    it fully. Several: ask which installation the question is about. Never
    blend two records.
 2. **No record:** answer from the common references without assuming a model,
@@ -180,7 +182,9 @@ stays on their machine.
 - Every row gets today's date and a source code from the template. No source,
   no row: it goes under Open questions instead.
 - Record what the conversation establishes: identity, layout, values read
-  out, changes made, errors seen, maintenance done, open questions.
+  out, changes made, errors seen, open questions. Maintenance done, counter
+  readings and pellet fills go in the logbook (`logbog` skill), not the
+  record.
 - An illegible or two-way reading goes under Open questions with both
   readings. Never pick one.
 - Append, do not rewrite history. A changed value gets a new row and an
@@ -276,6 +280,7 @@ chapter heading or the German term, then read that section.
 | The user says an answer was wrong, unhelpful or unsafe, or asks how to report a problem | Offer the `feedback` skill (`/pellet-expert:feedback`). Do not argue the point first; a report is more useful than a defence. |
 | Switching off, summer, season end, going away | There is no shutdown chapter, so assemble the cases and ask which is meant. Stop and start: `parameters.md` Kap. 4 (Ein/Aus keys), fan run-on in Kap. 13 (V1 Nachlauf). Main switch and what it cuts: `system-integration.md` Kap. 2, Pos. 3. Before maintenance: Kap. 1 Sicherheit. Summer: hot water only via Boilerbetrieb or Uhr-Boilerbetrieb (`parameters.md` Kap. 7–8), Rostschutz (Kap. 13), outdoor-temperature cut-off "Pumpe AUS bei" and Frostschutz (Kap. 9). Season end: the Putz- und Reinigungsanleitung. |
 | Cleaning, ash, maintenance intervals | `system-integration.md` Anhang Putz- und Reinigungsanleitung, TRVB H 118; ash counter in `parameters.md` Kap. 5 |
+| Logging maintenance done, counter readings or pellet fills; what is due; pellet consumption; whether an interval should change | The `logbog` skill (`/pellet-expert:logbog`). It keeps the logbook and computes every figure with its script. How to do a task stays here. |
 | Poor output, not getting warm | `system-integration.md` Kap. 16 first, then the record, then the relevant menus |
 | Dimensions, outputs, efficiency, emissions | `system-integration.md` Technische Daten (two tables, kept separate) and the TÜV certificate (SL-P 12 only) |
 

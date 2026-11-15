@@ -1,7 +1,7 @@
 {
   "name": "pellet-expert",
-  "description": "Unofficial expert on Lindner & Sommerauer SL-P wood pellet boilers: error messages, controller parameters, hydraulics, commissioning and cleaning, cited to the manual. Keeps a private local record of your own installation.",
-  "version": "0.2.0",
+  "description": "Unofficial expert on Lindner & Sommerauer SL-P wood pellet boilers: error messages, controller parameters, hydraulics, commissioning and cleaning, cited to the manual. Keeps a private local record and service logbook of your own installation, with pellet consumption.",
+  "version": "0.3.0",
   "license": "MIT",
   "author": {
     "name": "Peter Savnik"

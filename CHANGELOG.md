@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-15
+
+### Added
+
+- `logbog` skill: a private logbook per installation at
+  `pellet-installations/logbog/<label>.md`, with service done, a service plan
+  triggered by time, operating hours or the Aschenlade counter, counter
+  readings and pellet fills. Same rules as the installation record: rows shown
+  before writing, written only on a yes, owner or technician but no names,
+  source code on every row, append only.
+- `logbog.py`, a standard-library script that validates the logbook and
+  computes consumption (kg, operating hours, kg per hour, per interval, month
+  or heating season), service status, forecasts and the TRVB monthly
+  checklist. The skill quotes its numbers and never computes them itself.
+  It reads one local file, writes nothing and sends nothing.
+- Service-plan template seeded with the printed intervals from the
+  Putzanleitung and TRVB H 118, with the Rauchrohr and Wartung GAPs and the
+  three conflicting ash intervals passed on unresolved. A forecast may
+  shorten a printed interval, never lengthen it; the script refuses a plan
+  that does.
+- Unit tests (`evals/unit/`, `evals/run.sh unit`) on a fictional logbook, and
+  six eval cases for the logbook: consent and no identifiers, consumption
+  figures, counter-reset gap, no lengthening (safety tier), the three ash
+  sources, and the Rauchrohr GAP.
+- Verification log lines 50–51: what Betrieb-STD counts, and whether the
+  Aschenlade counter counts the same hours.
+
+### Changed
+
+- Installation record template schema 2: maintenance moves to the logbook. A
+  schema-1 record's Maintenance rows are offered for copying, never moved.
+- Main skill routes logging, due tasks and consumption to the logbook skill,
+  and does not read `pellet-installations/logbog/` as records.
+- Privacy policy and READMEs describe the logbook and the local script.
+
 ## [0.2.0] - 2026-09-22
 
 ### Added

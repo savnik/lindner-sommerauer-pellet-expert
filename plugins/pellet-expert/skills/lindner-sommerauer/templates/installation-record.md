@@ -17,7 +17,7 @@
        I  inferred. Allowed for context only. Never the basis for a setting.
      An entry without date and source is not a fact; move it to Open questions. -->
 
-schema: 1
+schema: 2
 created:
 last updated:
 
@@ -81,8 +81,10 @@ Errors, changes made, unusual behaviour. Newest last.
 
 ## Maintenance
 
-| Date | What was done | By (owner / technician) | Operating hours if read |
-|---|---|---|---|
+Kept in the logbook, pellet-installations/logbog/<label>.md (logbog skill):
+service done, the service plan, counter readings and pellet fills. A schema-1
+record may still have a Maintenance table here; the logbog skill offers to
+copy its rows into the logbook and leaves them in place.
 
 ## Open questions
 
