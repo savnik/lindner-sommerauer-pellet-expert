@@ -11,8 +11,9 @@ logbook with errors.
   logbog.py status    LOGBOOK [--today YYYY-MM-DD] [--json]
   logbog.py prognose  LOGBOOK [--today YYYY-MM-DD] [--days N] [--json]
   logbog.py tjekliste LOGBOOK --måned YYYY-MM [--json]
+  logbog.py graddage  LOGBOOK [--json]
 
-English aliases: consumption, forecast, checklist; --month for --måned.
+English aliases: consumption, forecast, checklist, degree-days; --month for --måned.
 Exit code 0 on success, 1 when the logbook has errors, 2 on bad usage.
 """
 
@@ -46,6 +47,7 @@ SECTIONS = {
                      "Condition", "By", "Source", "Note"],
     "service plan": ["ID", "Task", "Trigger", "Interval", "Basis",
                      "Valid from", "Note"],
+    "degree days": ["From", "To", "Degree days", "Source", "Note"],
 }
 REQUIRED = {"readings", "service done", "service plan"}
 
@@ -255,10 +257,12 @@ class Logbook:
         self.readings = []
         self.done = []
         self.plan = []
+        self.degree_days = []
         self._constants()
         self._readings()
         self._done()
         self._plan()
+        self._degree_days()
         self._identifiers()
         self.series = {k: self._series(k) for k in ("std", "ash")}
 
@@ -434,12 +438,63 @@ class Logbook:
             if re.fullmatch(r"[A-Z0-9][A-Z0-9-]*", d["task"]) and d["task"] not in ids:
                 self.p.warn(d["line"], f"Task '{d['task']}' looks like an ID but is not in the Service plan")
 
+    def _degree_days(self):
+        """Periods (From and To both inclusive) with their published degree-day total."""
+        for row in self.tables.get("degree days", []):
+            line = row["_line"]
+            d0 = self._date_source(row, "From")
+            d1 = self._date_source(row, "To")
+            try:
+                dd = parse_number(row.get("Degree days", ""))
+            except ValueError as e:
+                self.p.error(line, str(e))
+                continue
+            if d0 is None or d1 is None:
+                continue
+            if d1 < d0:
+                self.p.error(line, f"To {d1} is before From {d0}")
+                continue
+            if dd is None:
+                self.p.error(line, "Degree days is empty")
+                continue
+            if dd < 0:
+                self.p.error(line, "Degree days cannot be negative")
+                continue
+            if row.get("Source") == "I":
+                self.p.warn(line, "source I: this row is context only and is not used in arithmetic")
+                continue
+            for o in self.degree_days:
+                if d0 <= o["to"] and o["from"] <= d1:
+                    self.p.error(line, f"period {d0}–{d1} overlaps {o['from']}–{o['to']} (line {o['line']})")
+                    break
+            else:
+                self.degree_days.append({"from": d0, "to": d1, "dd": dd, "line": line})
+
+    def degree_days_between(self, d0, d1):
+        """Degree days on the days after d0 up to and including d1, as a fill
+        interval counts them. Each period is spread evenly over its days.
+        Returns (total, prorated) or (None, None) if any day is not covered."""
+        total, prorated = 0.0, False
+        day = d0 + dt.timedelta(days=1)
+        while day <= d1:
+            per = next((q for q in self.degree_days if q["from"] <= day <= q["to"]), None)
+            if per is None:
+                return None, None
+            n = (per["to"] - per["from"]).days + 1
+            lo, hi = max(per["from"], day), min(per["to"], d1)
+            k = (hi - lo).days + 1
+            total += per["dd"] * k / n
+            prorated = prorated or k < n
+            day = hi + dt.timedelta(days=1)
+        return total, prorated
+
     def _identifiers(self):
         for section, rows in self.tables.items():
             for row in rows:
                 for col, val in row.items():
                     if col == "_line" or col in ("Date", "Since", "Valid from", "Betrieb-STD",
-                                                 "Aschenlade aktuell", "Pellets added (kg)", "Sacks"):
+                                                 "Aschenlade aktuell", "Pellets added (kg)", "Sacks",
+                                                 "From", "To", "Degree days"):
                         continue
                     text = re.sub(r"\[[^\]]*\]", "", val)  # anchors carry page and year numbers
                     text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text)  # a date is not a phone number
@@ -606,6 +661,65 @@ def cmd_forbrug(lb, args):
                       "Betrieb-STD was read on both dates, with no counter gap between.",
                       "Month and season figures spread each interval evenly over its days; "
                       "they are an allocation, not a measurement."]}
+
+
+def fit_line(xs, ys):
+    """Least squares y = a + b·x; None when x does not vary."""
+    mx, my = statistics.fmean(xs), statistics.fmean(ys)
+    sxx = sum((x - mx) ** 2 for x in xs)
+    if sxx == 0:
+        return None
+    b = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx
+    a = my - b * mx
+    syy = sum((y - my) ** 2 for y in ys)
+    r2 = 1 - sum((y - a - b * x) ** 2 for x, y in zip(xs, ys)) / syy if syy else None
+    return a, b, r2
+
+
+def cmd_graddage(lb, args):
+    rows = []
+    for iv in fill_intervals(lb):
+        dd, prorated = lb.degree_days_between(iv["from"], iv["to"])
+        rows.append({"from": str(iv["from"]), "to": str(iv["to"]), "days": iv["days"],
+                     "kg": h(iv["kg"]), "kg_per_day": h(rate(iv["kg"], iv["days"])),
+                     "degree_days": h(dd), "degree_days_per_day": h(rate(dd, iv["days"])),
+                     "kg_per_degree_day": h(rate(iv["kg"], dd)), "exact": iv["exact"],
+                     "degree_days_basis": ("not covered by the Degree days table" if dd is None else
+                                           "a period only partly in the interval was spread evenly"
+                                           if prorated else "whole periods"),
+                     "_x": rate(dd, iv["days"]), "_y": rate(iv["kg"], iv["days"])})
+    use = [r for r in rows if r["exact"] and r["_x"] is not None and r["_y"] is not None]
+    summary = {"intervals_used": len(use),
+               "intervals_not_used": len(rows) - len(use),
+               "kg_per_degree_day_median": None, "kg_per_degree_day_range": None,
+               "fit": None}
+    kpd = [r["kg_per_degree_day"] for r in use if r["kg_per_degree_day"] is not None]
+    if kpd:
+        summary["kg_per_degree_day_range"] = [min(kpd), max(kpd)]
+    if len(use) >= MIN_N:
+        if len(kpd) >= MIN_N:
+            summary["kg_per_degree_day_median"] = h(statistics.median(kpd))
+        f = fit_line([r["_x"] for r in use], [r["_y"] for r in use])
+        if f is None:
+            summary["fit"] = "not computed: degree days per day are the same in every interval"
+        else:
+            a, b, r2 = f
+            summary["fit"] = {"kg_per_degree_day_slope": h(b), "kg_per_day_at_0_degree_days": h(a),
+                              "r_squared": h(r2), "n": len(use)}
+    else:
+        summary["verdict"] = (f"insufficient data: {len(use)} exact interval(s) with degree days, "
+                              f"{MIN_N} needed")
+    for r in rows:
+        del r["_x"], r["_y"]
+    return {"intervals": rows, "summary": summary,
+            "notes": ["Only intervals between two fills that ended at the same level, and whose "
+                      "days are all covered by the Degree days table, are used.",
+                      "The slope is kg per degree day for space heating; the value at 0 degree days "
+                      "is hot water and standing losses. Both describe house, habits and boiler "
+                      "together: a change can come from indoor temperature, hot water use, sun, "
+                      "wind, the pellet product or the boiler. This is not the boiler's efficiency.",
+                      "The degree days are what the owner entered from a published source, on that "
+                      "source's base temperature. The script fetches nothing."]}
 
 
 def active_plan(lb):
@@ -889,12 +1003,22 @@ def render(command, res, problems):
         if res["other_service_in_month"]:
             out.append("Other service this month:")
             out += [f"- {o['date']}: {o['task']} ({o['action']})" for o in res["other_service_in_month"]]
+    elif command == "graddage":
+        out.append("## Consumption against degree days\n")
+        out.append(md_table(res["intervals"], ["from", "to", "days", "kg", "kg_per_day", "degree_days",
+                                               "degree_days_per_day", "kg_per_degree_day", "exact",
+                                               "degree_days_basis"]))
+        out.append("## Summary\n")
+        out += [f"- {k}: {v if v is not None else '–'}" for k, v in res["summary"].items()]
+        out.append("")
+        out += [f"Note: {n}" for n in res["notes"]]
     return "\n".join(out).rstrip() + "\n"
 
 
 COMMANDS = {"validate": cmd_validate, "forbrug": cmd_forbrug, "status": cmd_status,
-            "prognose": cmd_prognose, "tjekliste": cmd_tjekliste}
-ALIASES = {"consumption": "forbrug", "forecast": "prognose", "checklist": "tjekliste"}
+            "prognose": cmd_prognose, "tjekliste": cmd_tjekliste, "graddage": cmd_graddage}
+ALIASES = {"consumption": "forbrug", "forecast": "prognose", "checklist": "tjekliste",
+           "degree-days": "graddage"}
 
 
 def main(argv=None):

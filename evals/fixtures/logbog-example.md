@@ -28,6 +28,14 @@ created: 2025-01-05
 | 2025-09-01 | 300h00 | 90:00 | | 25 | 2025-06-01 | | | O | summer, from memory |
 | 2025-09-10 | | | 1000 | | | | | I | guess, context only |
 
+## Degree days
+
+| From | To | Degree days | Source | Note |
+|---|---|---|---|---|
+| 2025-01-01 | 2025-01-31 | 465 | P | fictional monthly total |
+| 2025-02-01 | 2025-02-28 | 392 | P | |
+| 2025-03-01 | 2025-03-31 | 341 | P | |
+
 ## Service done
 
 | Date | Task | Action | F-code | Betrieb-STD | Condition | By | Source | Note |

@@ -63,6 +63,20 @@ Counter readings and pellet fills. One row per occasion.
 | Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Pellet product | Event | Source | Note |
 |---|---|---|---|---|---|---|---|---|---|---|
 
+## Degree days
+
+Optional. Degree days per period, copied by the owner from a published source
+(for example DMI's monthly figures for Denmark), so that `graddage` can set
+consumption against the weather. Leave the table out or empty if not used.
+
+- From and To: the first and the last day of the period, both included.
+- Degree days: the published total for the period, on that source's base
+  temperature. Use one source throughout.
+- Source: P for a published table. Periods must not overlap.
+
+| From | To | Degree days | Source | Note |
+|---|---|---|---|---|
+
 ## Service done
 
 What was actually done, when, and by whom (owner or technician, no names).
