@@ -442,6 +442,7 @@ class Logbook:
                                                  "Aschenlade aktuell", "Pellets added (kg)", "Sacks"):
                         continue
                     text = re.sub(r"\[[^\]]*\]", "", val)  # anchors carry page and year numbers
+                    text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text)  # a date is not a phone number
                     for rx, what in IDENTIFIER_PATTERNS:
                         m = rx.search(text)
                         if m and (what != IDENTIFIER_PATTERNS[1][1]
@@ -494,6 +495,16 @@ class Logbook:
         for r in reversed(self.readings):
             if r[key] is not None:
                 return r["date"], r[key]
+        return None
+
+    def current(self, key):
+        """(date, value, reset) of a counter as last known. A reset row means the
+        counter stood at 0 from that date, whatever was read before the reset."""
+        for r in reversed(self.readings):
+            if key in r["resets"]:
+                return r["date"], 0.0, True
+            if r[key] is not None:
+                return r["date"], r[key], False
         return None
 
     def cum_at(self, key, date):
@@ -629,19 +640,20 @@ def cmd_status(lb, args):
         iv = p["interval"]
         if p["trigger"] == "counter":
             setting = lb.constants.get("aschenlade setting (h)")
-            lat = lb.latest("ash")
+            lat = lb.current("ash")
             r["counter_setting_h"] = h(setting)
             if lat is None or setting is None:
                 r["state"] = "no reading" if lat is None else "setting unknown"
             else:
-                d, val = lat
+                d, val, was_reset = lat
                 r["counter_read_on"] = str(d)
                 r["counter_value_h"] = h(val)
                 r["hours_to_message"] = h(setting - val)
                 r["hours_to_F20"] = h(setting + F20_MARGIN_H - val)
                 r["state"] = ("overdue" if val >= setting else
                               "due soon" if setting - val <= 0.1 * setting else "ok")
-                r["note"] = (f"as read on {d}; the counter has moved since. Message at the setting, "
+                r["note"] = (f"{'reset to 0' if was_reset else 'as read'} on {d}; the counter has moved since. "
+                             f"Message at the setting, "
                              f"F20 stop at setting + {F20_MARGIN_H:g} h [SL-P BA 2008, Kap. 5, S. 1–2]")
             rows.append(r)
             continue
@@ -738,12 +750,12 @@ def cmd_prognose(lb, args):
     rates = [(c1 - c0) / (d1 - d0).days for (d0, c0, _), (d1, c1, _) in zip(pts, pts[1:])
              if d1 > d0 and not any(d0 <= g <= d1 for g in agaps)]
     setting = lb.constants.get("aschenlade setting (h)")
-    lat = lb.latest("ash")
+    lat = lb.current("ash")
     ash["n_rates"] = len(rates)
     if len(rates) >= MIN_N and lat and setting is not None:
         med = statistics.median(rates)
-        d, val = lat
-        ash["from_reading"] = f"{val:g} h on {d}"
+        d, val, was_reset = lat
+        ash["from_reading"] = f"{val:g} h on {d}" + (" (reset)" if was_reset else "")
         ash["counter_h_per_day_median"] = h(med)
         ash["counter_h_per_day_range"] = [h(min(rates)), h(max(rates))]
         if med > 0:

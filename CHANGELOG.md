@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-11-15
+
+### Fixed
+
+- `logbog.py status` and `prognose`: after a "reset Aschenlade" row the ash
+  counter counts as 0 from that date. Before, the value read just before the
+  reset was used, so ASCHE showed as due or overdue right after emptying.
+- `logbog.py validate`: a date (YYYY-MM-DD) in a Note no longer triggers the
+  "phone-number-like digit string" warning.
+
 ## [0.3.1] - 2026-11-15
 
 ### Added
