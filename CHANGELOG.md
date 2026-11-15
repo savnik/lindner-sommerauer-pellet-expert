@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-15
+
+### Added
+
+- `logbog.py graddage` (alias `degree-days`): consumption per fill interval
+  against degree days, kg per degree day, and with at least three exact
+  intervals a fitted line (kg per degree day for space heating, kg per day at
+  0 degree days for hot water and standing losses, r²). A relative measure,
+  not the boiler's efficiency.
+- Logbook template: optional "Degree days" section (From, To, Degree days,
+  Source, Note) for published degree-day totals the owner copies in. Periods
+  only partly inside a fill interval are spread evenly and marked. Logbooks
+  without the section stay valid.
+- `logbog` skill: guidance on degree days and on why they do not give
+  efficiency.
+
 ## [0.3.2] - 2026-11-15
 
 ### Fixed

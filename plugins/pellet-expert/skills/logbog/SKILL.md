@@ -141,6 +141,7 @@ this skill's directory.)
 | `status` | "what's due", "what needs doing" | `--today` |
 | `prognose` | "how much will we need", "should this interval change" | `--days N` |
 | `tjekliste` | the TRVB monthly checklist | `--måned YYYY-MM` |
+| `graddage` | consumption against the weather, kg per degree day | |
 
 Exit code 1 means the logbook has errors and the script refused to compute.
 Show the errors and offer to correct them with correcting rows. Do not work
@@ -158,6 +159,25 @@ figure; say so if the owner asks why their estimate is missing.
 not say whether it counts burner, stoker or powered-on time (verification.md
 line 50), and whether the Aschenlade counter counts the same hours is open
 (line 51). Say so when kg per hour is the question.
+
+## Degree days
+
+`graddage` sets each fill interval's kg per day against the degree days per
+day from the logbook's Degree days table, and with at least three exact
+intervals fits a line: the slope is kg per degree day (space heating), the
+value at 0 degree days is hot water and standing losses.
+
+- The owner copies the degree days from a published source and gives them as
+  P rows. Never look them up, fetch them or estimate them yourself, and never
+  fill in a period from memory.
+- It is a relative measure of house, habits and boiler together, not the
+  boiler's efficiency. Say so whenever efficiency is the question. Efficiency
+  needs the heat delivered (a heat meter) or a flue-gas measurement by a
+  technician.
+- A change in kg per degree day can come from indoor temperature, hot water
+  use, sun, wind, the pellet product or the boiler. Do not name one cause.
+- Pass on which intervals were used, n, r² and "spread evenly" for periods
+  only partly inside an interval.
 
 ## Service plan
 

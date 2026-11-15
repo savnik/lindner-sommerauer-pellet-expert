@@ -296,5 +296,50 @@ class Checklist(Base):
         self.assertEqual(len(res["weekly_checks_logged"]), 2)
 
 
+
+class DegreeDays(Base):
+    def setUp(self):
+        super().setUp()
+        _, self.res = run("graddage", "--today", TODAY)
+        self.iv = {r["to"]: r for r in self.res["intervals"]}
+
+    def test_interval_spanning_two_months(self):
+        r = self.iv["2025-02-02"]  # 12 days of January at 465/31, 2 of February at 392/28
+        self.assertEqual((r["degree_days"], r["kg_per_degree_day"]), (208, 0.72))
+        self.assertIn("spread evenly", r["degree_days_basis"])
+
+    def test_uncovered_interval_is_not_used(self):
+        self.assertIsNone(self.iv["2025-09-01"]["degree_days"])
+
+    def test_only_exact_intervals_are_fitted(self):
+        s = self.res["summary"]
+        self.assertEqual((s["intervals_used"], s["kg_per_degree_day_median"]), (4, 0.74))
+        self.assertEqual((s["fit"]["kg_per_degree_day_slope"], s["fit"]["kg_per_day_at_0_degree_days"],
+                          s["fit"]["n"]), (0.28, 6.61, 4))
+
+    def test_whole_periods_are_not_prorated(self):
+        lb = logbog.Logbook(self.text.replace(
+            "| 2025-01-01 | 2025-01-31 | 465 | P | fictional monthly total |",
+            "| 2025-01-01 | 2025-01-05 | 75 | P | |\n| 2025-01-06 | 2025-01-31 | 390 | P | |"),
+            logbog.parse_date(TODAY))
+        dd, prorated = lb.degree_days_between(logbog.parse_date("2024-12-31"), logbog.parse_date("2025-01-05"))
+        self.assertEqual((dd, prorated), (75, False))
+
+    def test_overlapping_periods_are_an_error(self):
+        text = self.with_row("Degree days", "| 2025-03-15 | 2025-04-15 | 300 | P | |")
+        code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
+        self.assertTrue(any("overlaps" in e["message"] for e in res["errors"]))
+
+    def test_too_few_intervals(self):
+        text = self.text.replace("| 2025-02-01 | 2025-02-28 | 392 | P | |\n", "")
+        _, res = run("graddage", "--today", TODAY, text=text, tmp=self.tmp)
+        self.assertIn("insufficient", res["summary"]["verdict"])
+        self.assertIsNone(res["summary"]["fit"])
+
+    def test_section_is_optional(self):
+        lines = self.text.split("## Degree days")[0] + "## Service done" + self.text.split("## Service done")[1]
+        code, res = run("graddage", "--today", TODAY, text=lines, tmp=self.tmp)
+        self.assertEqual((code, res["summary"]["intervals_used"]), (0, 0))
+
 if __name__ == "__main__":
     unittest.main()
