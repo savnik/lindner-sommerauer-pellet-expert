@@ -18,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   now says kg per Betrieb-STD hour is per available hour, not per burner hour,
   and `parameters.md` carries a pointer at Betrieb-STD.
 
+### Added
+
+- `logbog.py forbrug`: burner hours per fill interval from the Aschenlade
+  counter, summed across "reset Aschenlade" rows, and kg per burner hour, with
+  median, n and range over exact intervals, and burner hours per month or
+  season. A reset without a reading is a gap, as for Betrieb-STD. The skill
+  says kg per burner hour is fuel use, not efficiency.
+
 ## [0.3.2] - 2026-11-15
 
 ### Fixed

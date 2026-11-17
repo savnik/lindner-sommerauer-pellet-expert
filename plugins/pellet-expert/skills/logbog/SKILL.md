@@ -137,7 +137,7 @@ this skill's directory.)
 | Command | For | Options |
 |---|---|---|
 | `validate` | after every write; before anything else | `--today` |
-| `forbrug` | "how much have we used", kg per hour, per season | `--per interval\|month\|season` |
+| `forbrug` | "how much have we used", kg per hour, kg per burner hour, per season | `--per interval\|month\|season` |
 | `status` | "what's due", "what needs doing" | `--today` |
 | `prognose` | "how much will we need", "should this interval change" | `--days N` |
 | `tjekliste` | the TRVB monthly checklist | `--måned YYYY-MM` |
@@ -161,6 +161,17 @@ observation on one controller (verification.md line 52, closing lines 50 and
 51). So kg per Betrieb-STD hour is kg per available hour, not per burner hour.
 Say so when kg per hour is the question, and say that it is a field
 observation, not manufacturer text.
+
+`forbrug` also gives burner hours (the Aschenlade counter, summed across
+"reset Aschenlade" rows) and kg per burner hour: how much the boiler burns per
+hour it burns. Quote it as the script prints it, with n and range. It is fuel
+use, not efficiency. Efficiency is heat delivered over the energy in the
+pellets, and the logbook has no measurement of heat delivered; never present
+kg per burner hour, or anything derived from it, as efficiency. It also
+depends on how hard the boiler worked in the period (a cold spell raises it),
+so a change is a reason to look, not a finding. A burner-hour figure needs the
+Aschenlade counter read at both fills and before every reset in between; when
+it is missing, say which reading would have given it.
 
 ## Service plan
 
