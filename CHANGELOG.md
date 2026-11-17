@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-11-17
+
+### Changed
+
+- What the counters count (verification.md line 52, closing lines 50 and 51):
+  Betrieb-STD counts hours the boiler is in an operating mode and available;
+  the Aschenlade counter counts burner time. Field observation on one
+  controller, labelled as such; the manual prints neither. The `logbog` skill
+  now says kg per Betrieb-STD hour is per available hour, not per burner hour,
+  and `parameters.md` carries a pointer at Betrieb-STD.
+
 ## [0.3.2] - 2026-11-15
 
 ### Fixed

@@ -1166,6 +1166,10 @@ Betrieb-STD      0h00m
 ```
 Aktuelle Betriebsstunden. Löschen mit +/- [S. 3]
 
+> Field observation, not in the manual: counts hours in an operating mode with the
+> boiler available, not burner time; the Aschenlade counter (Kap. 5) counts burner
+> time (verification.md line 52).
+
 ```
 Aktuell          30Min
 Displayschoner   30Min

@@ -154,10 +154,13 @@ intervals not ending at the same level, gaps across a counter reset, n, the
 median and range, "stale" on an ash estimate. Source I rows are not in any
 figure; say so if the owner asks why their estimate is missing.
 
-"Betrieb-STD" is "operating hours as the display shows them". The manual does
-not say whether it counts burner, stoker or powered-on time (verification.md
-line 50), and whether the Aschenlade counter counts the same hours is open
-(line 51). Say so when kg per hour is the question.
+"Betrieb-STD" counts the hours the boiler is in an operating mode and
+available, whether or not it is firing. The Aschenlade counter counts burner
+time, so it rises far more slowly. The manual prints neither; this is a field
+observation on one controller (verification.md line 52, closing lines 50 and
+51). So kg per Betrieb-STD hour is kg per available hour, not per burner hour.
+Say so when kg per hour is the question, and say that it is a field
+observation, not manufacturer text.
 
 ## Service plan
 
