@@ -843,6 +843,24 @@ def cmd_forbrug(lb, args):
                       "medians."]}
 
 
+def write_reminder(path, day, warn_day, level):
+    """A local iCalendar file with one all-day event and an alarm at 09:00.
+    Written only when asked (--ics); nothing is sent anywhere."""
+    stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    uid = f"pellet-refill-{day.isoformat()}-{stamp}@pellet-expert.local"
+    lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//pellet-expert//logbog//DA", "CALSCALE:GREGORIAN",
+             "BEGIN:VEVENT", f"UID:{uid}", f"DTSTAMP:{stamp}",
+             f"DTSTART;VALUE=DATE:{day:%Y%m%d}", f"DTEND;VALUE=DATE:{day + dt.timedelta(days=1):%Y%m%d}",
+             "SUMMARY:Fyld pillesiloen",
+             f"DESCRIPTION:Siloen ventes under {level:g} sække {warn_day:%d.%m.%Y} (omtrentlig prognose"
+             " fra logbogen; forbruget følger vejret).",
+             "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:Fyld pillesiloen", "TRIGGER:PT9H", "END:VALARM",
+             "END:VEVENT", "END:VCALENDAR"]
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        fh.write("\r\n".join(lines) + "\r\n")
+    return {"file": path, "date": day.isoformat()}
+
+
 def cmd_silo(lb, args):
     """Store level since the last fill, and when it runs out at the recent rate."""
     sack = lb.constants.get("sack size (kg)")
@@ -884,6 +902,9 @@ def cmd_silo(lb, args):
     out["below_threshold_at"] = at(args.under) if l_last > args.under else out["last_level"]["t"]
     out["empty_at"] = at(0)
     out["days_left"] = h(l_last / per_day)
+    if args.ics:
+        warn_day = dt.datetime.fromisoformat(out["below_threshold_at"]).date()
+        out["reminder"] = write_reminder(args.ics, warn_day - dt.timedelta(days=1), warn_day, args.under)
     out["note"] = ("straight line from the last level reading at the average rate of the window; "
                    "approximate: levels are estimated on the sack scale, and the rate moves with the "
                    "weather. Inference from the owner's own rows.")
@@ -1219,6 +1240,8 @@ def main(argv=None):
             sp.add_argument("--dage", "--days", type=float, default=7, help="window for the average rate")
             sp.add_argument("--under", type=float, default=None,
                             help="refill level in sacks; default: Constants 'Refill level (sacks)', else 5")
+            sp.add_argument("--ics", metavar="FILE",
+                            help="also write a calendar reminder (.ics) for the day before; local file only")
         if name == "forbrug":
             sp.add_argument("--graddage", metavar="CSV",
                             help="local degree-day CSV written by graddage.py (read only; no network)")

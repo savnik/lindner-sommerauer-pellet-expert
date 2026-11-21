@@ -386,6 +386,17 @@ class Silo(Series):
         _, res = self.silo(None, "--dage", "3")
         self.assertEqual(res["rate"]["from"], "2025-01-07T15:00")
 
+    def test_ics_reminder_day_before(self):
+        path = self.tmp / "r.ics"
+        _, res = self.silo(None, "--ics", str(path))
+        warn = res["below_threshold_at"][:10]
+        text = path.read_text(encoding="utf-8")
+        day = res["reminder"]["date"]
+        self.assertEqual(logbog.dt.date.fromisoformat(day), logbog.dt.date.fromisoformat(warn) - logbog.dt.timedelta(days=1))
+        self.assertIn(f"DTSTART;VALUE=DATE:{day.replace('-', '')}", text)
+        self.assertIn("BEGIN:VALARM", text)
+        self.assertTrue(path.read_bytes().endswith(b"END:VCALENDAR\r\n"))
+
     def test_no_levels_no_forecast(self):
         _, res = run("silo", "--today", TODAY)
         self.assertNotIn("empty_at", res)

@@ -301,7 +301,14 @@ owner's own choice, else 5 sacks.
   the script prints them. Mark it approximate: levels are estimated on the
   sack scale and consumption follows the weather (it rises in a cold spell).
   This is the one forecast given without being asked, and only right after a
-  fill; it is not a reminder.
+  fill.
+- In the same answer, ask whether to make a calendar reminder for the day
+  before that date. On a yes, run `silo` again with
+  `--ics pellet-installations/logbog/naeste-paafyldning.ics` and open the file
+  (`open` on macOS, `xdg-open` on Linux, `start` on Windows) so the owner's
+  calendar app imports it; say that the owner confirms it there. The file is
+  local; nothing is sent. Its text names no person, address or installation.
+  On a no, do not ask again until the next fill.
 - No levels in sacks, or too few readings: say that no date can be given yet
   and which reading would give one.
 

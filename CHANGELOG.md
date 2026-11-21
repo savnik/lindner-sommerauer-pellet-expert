@@ -26,7 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `logbog.py silo`: store level since the last fill, average rate over the
   last week, and the dates the store falls below the refill level (Constants
   "Refill level (sacks)", else 5) and runs empty. The skill reports the
-  latest expected next fill right after every fill.
+  latest expected next fill right after every fill and offers a calendar
+  reminder the day before: `silo --ics FILE` writes a local .ics file with an
+  alarm at 09:00.
 - `graddage.py`: heating degree days per day from DMI's open Climate Data API
   for the home's 10 km grid square, into a local CSV. First run asks for the
   address; only its postal code is sent (to OpenStreetMap) and only the
