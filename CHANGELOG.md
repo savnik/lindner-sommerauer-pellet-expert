@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-11-21
+
+### Added
+
+- Logbook: optional Readings columns "Level (sacks)" and "Level before fill
+  (sacks)", for a store read on a sack scale. A level read between fills is a
+  row of its own instead of a Note.
+- `logbog.py forbrug`: "Consumption between level readings": kg, kg per day,
+  kg per hour and kg per burner hour from one level reading to the next, fills
+  or not, with its own summary (median from n ≥ 3, n, range). Marked
+  approximate and kept out of the fill-to-fill headline figures. A fill
+  without a level read before it breaks the chain.
+- `logbog.py validate`: a level before fill on a row without a fill is an
+  error; a level that rises without a fill, or a fill whose levels do not
+  match the sacks added (by more than one sack), is a warning.
+
 ## [0.3.3] - 2026-11-17
 
 ### Changed

@@ -313,9 +313,16 @@ class Logbook:
                 r["ash"] = parse_hours(row.get("Aschenlade aktuell", ""))
                 kg = parse_number(row.get("Pellets added (kg)", ""))
                 sacks = parse_number(row.get("Sacks", ""))
+                r["lvl"] = parse_number(row.get("Level (sacks)", ""))
+                r["lvl_before"] = parse_number(row.get("Level before fill (sacks)", ""))
             except ValueError as e:
                 self.p.error(line, str(e))
                 continue
+            for k, col in (("lvl", "Level (sacks)"), ("lvl_before", "Level before fill (sacks)")):
+                if r[k] is not None and r[k] < 0:
+                    self.p.error(line, f"{col} cannot be negative")
+            if (r["lvl"] is not None or r["lvl_before"] is not None) and sack is None:
+                self.p.error(line, "a level in sacks is given but 'Sack size (kg)' is not set under Constants")
             if sacks is not None:
                 if sack is None:
                     self.p.error(line, "Sacks given but 'Sack size (kg)' is not set under Constants")
@@ -324,6 +331,13 @@ class Logbook:
                 elif abs(kg - sacks * sack) > 0.5:
                     self.p.warn(line, f"{kg:g} kg does not match {sacks:g} sacks × {sack:g} kg")
             r["kg"] = kg
+            if r["lvl_before"] is not None and kg is None:
+                self.p.error(line, "Level before fill (sacks) given on a row without a fill")
+            if r["lvl_before"] is not None and r["lvl"] is not None and kg is not None and sack:
+                # one sack is the resolution of an owner's sack scale
+                if abs((r["lvl"] - r["lvl_before"]) - kg / sack) > 1:
+                    self.p.warn(line, f"level rose from {r['lvl_before']:g} to {r['lvl']:g} sacks, "
+                                f"but {kg / sack:g} sacks were added")
             since = row.get("Since", "")
             r["since"] = parse_date(since) if since else None
             if since and r["since"] is None:
@@ -342,7 +356,8 @@ class Logbook:
                 name = "Betrieb-STD" if m.group(1).lower().startswith("b") else "Aschenlade"
                 r["resets"].add(COUNTERS[name])
             if r["source"] == "I":
-                if kg is not None or r["std"] is not None or r["ash"] is not None:
+                if (kg is not None or r["std"] is not None or r["ash"] is not None
+                        or r["lvl"] is not None or r["lvl_before"] is not None):
                     self.p.warn(line, "source I: this row is context only and is not used in arithmetic")
                 if r["resets"]:
                     self.p.error(line, "a counter reset cannot have source I")
@@ -439,7 +454,8 @@ class Logbook:
             for row in rows:
                 for col, val in row.items():
                     if col == "_line" or col in ("Date", "Since", "Valid from", "Betrieb-STD",
-                                                 "Aschenlade aktuell", "Pellets added (kg)", "Sacks"):
+                                                 "Aschenlade aktuell", "Pellets added (kg)", "Sacks",
+                                                 "Level (sacks)", "Level before fill (sacks)"):
                         continue
                     text = re.sub(r"\[[^\]]*\]", "", val)  # anchors carry page and year numbers
                     text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text)  # a date is not a phone number
@@ -515,6 +531,7 @@ class Logbook:
 # ---------------------------------------------------------------- commands
 
 def cmd_validate(lb, args):
+    level_intervals(lb)  # surfaces level warnings
     return {"errors": lb.p.errors, "warnings": lb.p.warnings,
             "counts": {"readings": len(lb.readings), "service done": len(lb.done),
                        "plan rows": len(lb.plan)}}
@@ -539,6 +556,39 @@ def fill_intervals(lb):
                     "basis": (f"same level ('{f['level']}') at both fills" if exact
                               else "approximate: level differs, unknown, or stated period")})
         prev = f
+    return out
+
+
+def level_intervals(lb):
+    """Consumption between consecutive level readings in sacks, fills or not.
+    From the level after one reading to the level before the next. A fill
+    without a level read before it, or a fill with Since, breaks the chain."""
+    sack = lb.constants.get("sack size (kg)")
+    out, prev = [], None   # prev: (date, level in sacks, line)
+    if not sack:
+        return out
+    for r in lb.readings:
+        fill = r["kg"] is not None
+        start = r["lvl_before"] if fill else r["lvl"]
+        if fill and (start is None or r["since"] is not None):
+            prev = (r["date"], r["lvl"], r["line"]) if r["lvl"] is not None and r["since"] is None else None
+            continue
+        if prev is not None and start is not None and r["date"] > prev[0]:
+            used = prev[1] - start
+            if used < 0:
+                lb.p.warn(r["line"], f"level rose from {prev[1]:g} to {start:g} sacks since line "
+                          f"{prev[2]} without a fill; interval skipped")
+            else:
+                d0, d1 = prev[0], r["date"]
+                out.append({"from": d0, "to": d1, "days": (d1 - d0).days,
+                            "sacks": used, "kg": used * sack,
+                            "hours": lb.hours_between("std", d0, d1),
+                            "burner_hours": lb.hours_between("ash", d0, d1),
+                            "level_from": prev[1], "level_to": start})
+        if r["lvl"] is not None:
+            prev = (r["date"], r["lvl"], r["line"])
+        elif fill:
+            prev = None
     return out
 
 
@@ -572,6 +622,25 @@ def cmd_forbrug(lb, args):
         "kg_per_burner_hour_range": [h(min(kgb)), h(max(kgb))] if kgb else None,
         "kg_per_day_median": h(statistics.median(kgd)) if len(kgd) >= MIN_N else None,
         "kg_per_day_n": len(kgd),
+    }
+    lvl_rows = []
+    for iv in level_intervals(lb):
+        lvl_rows.append({"from": str(iv["from"]), "to": str(iv["to"]), "days": iv["days"],
+                         "level_from": iv["level_from"], "level_to": iv["level_to"],
+                         "sacks": h(iv["sacks"]), "kg": h(iv["kg"]),
+                         "kg_per_day": h(rate(iv["kg"], iv["days"])),
+                         "hours": h(iv["hours"]), "kg_per_hour": h(rate(iv["kg"], iv["hours"])),
+                         "burner_hours": h(iv["burner_hours"]),
+                         "kg_per_burner_hour": h(rate(iv["kg"], iv["burner_hours"]))})
+    lb_kgb = [r["kg_per_burner_hour"] for r in lvl_rows if r["kg_per_burner_hour"] is not None]
+    lb_kgd = [r["kg_per_day"] for r in lvl_rows if r["kg_per_day"] is not None]
+    level_summary = {
+        "level_intervals": len(lvl_rows),
+        "kg_per_burner_hour_median": h(statistics.median(lb_kgb)) if len(lb_kgb) >= MIN_N else None,
+        "kg_per_burner_hour_n": len(lb_kgb),
+        "kg_per_burner_hour_range": [h(min(lb_kgb)), h(max(lb_kgb))] if lb_kgb else None,
+        "kg_per_day_median": h(statistics.median(lb_kgd)) if len(lb_kgd) >= MIN_N else None,
+        "kg_per_day_n": len(lb_kgd),
     }
     # Counter hours between consecutive readings, from the counters alone.
     def counter_steps(key):
@@ -618,6 +687,7 @@ def cmd_forbrug(lb, args):
               "burner_days_covered": b["burner_days"]}
              for k, b in sorted(buckets.items())]
     return {"intervals": rows, "summary": summary, "per": per, "periods": table,
+            "level_intervals": lvl_rows, "level_summary": level_summary,
             "notes": ["hours are Betrieb-STD: hours in an operating mode with the boiler "
                       "available. burner_hours are the Aschenlade counter, summed across "
                       "'reset Aschenlade' rows: hours the burner burned (field observation, "
@@ -628,7 +698,11 @@ def cmd_forbrug(lb, args):
                       "the same level, with the counter read on both dates and no counter gap "
                       "between. The headline medians use these intervals only.",
                       "Month and season figures spread each interval evenly over its days; "
-                      "they are an allocation, not a measurement."]}
+                      "they are an allocation, not a measurement.",
+                      "Level intervals run between level readings in sacks, with or without a "
+                      "fill. They are approximate: a level is estimated on the owner's sack "
+                      "scale, typically to about one sack. They are not in the headline "
+                      "medians."]}
 
 
 def active_plan(lb):
@@ -875,6 +949,14 @@ def render(command, res, problems):
         out.append("## Summary\n")
         out += [f"- {k}: {v if v is not None else '– (fewer than %d values)' % MIN_N}"
                 for k, v in res["summary"].items()]
+        if res["level_intervals"]:
+            out.append("\n## Consumption between level readings (approximate)\n")
+            out.append(md_table(res["level_intervals"], ["from", "to", "days", "level_from", "level_to",
+                                                         "sacks", "kg", "kg_per_day", "hours", "kg_per_hour",
+                                                         "burner_hours", "kg_per_burner_hour"]))
+            out.append("### Level summary\n")
+            out += [f"- {k}: {v if v is not None else '– (fewer than %d values)' % MIN_N}"
+                    for k, v in res["level_summary"].items()]
         if res["per"] in ("month", "season"):
             out.append(f"\n## Per {res['per']} (allocated)\n")
             out.append(md_table(res["periods"], ["period", "kg", "kg_days_covered", "kg_approximate",

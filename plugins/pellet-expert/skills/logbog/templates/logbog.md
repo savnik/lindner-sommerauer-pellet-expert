@@ -49,6 +49,12 @@ Counter readings and pellet fills. One row per occasion.
   words ("full", "to the mark"). Two fills that end at the same level give an
   exact consumption figure for the time between them; anything else is marked
   approximate.
+- Level (sacks) and Level before fill (sacks): optional, for a store read on
+  a sack scale. "Level (sacks)" is the number of sacks in the store as read
+  at this row, after any fill in it; "Level before fill (sacks)" is read just
+  before filling, on a fill row only. A level read between fills is a row of
+  its own. The script then gives approximate consumption between level
+  readings, alongside the fill-to-fill figures.
 - Measure the level the same way every time. One way: before filling, run
   the suction manually so the boiler's own hopper is full, then fill the
   store and read the level. This is an owner practice, not printed in the
@@ -60,8 +66,8 @@ Counter readings and pellet fills. One row per occasion.
   zero. The counter values in that row are the values just BEFORE the reset;
   leave them empty if they were not read, and the script will mark a gap.
 
-| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Pellet product | Event | Source | Note |
-|---|---|---|---|---|---|---|---|---|---|---|
+| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Level (sacks) | Level before fill (sacks) | Pellet product | Event | Source | Note |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Service done
 

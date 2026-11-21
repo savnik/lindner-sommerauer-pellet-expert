@@ -86,12 +86,23 @@ class Validate(Base):
 
     def test_template_row_with_pellet_product_is_valid(self):
         text = TEMPLATE.read_text(encoding="utf-8")
-        header = "| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Pellet product | Event | Source | Note |\n|---|---|---|---|---|---|---|---|---|---|---|\n"
+        header = ("| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since "
+                  "| Level after | Level (sacks) | Level before fill (sacks) | Pellet product | Event "
+                  "| Source | Note |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
         self.assertIn(header, text)
-        text = text.replace(header, header + "| 2025-11-01 | | | 90 | | | full | Brand X premium | | O | |\n")
+        text = text.replace(header, header + "| 2025-11-01 | | | 90 | | | full | | | Brand X premium | | O | |\n")
         code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
         self.assertEqual(code, 0, res["errors"])
         self.assertEqual(res["counts"]["readings"], 1)
+
+    def test_level_needs_sack_size(self):
+        text = TEMPLATE.read_text(encoding="utf-8")
+        text = text.replace("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
+                            "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
+                            "| 2025-11-01 | | | | | | | 20 | | | | D | |\n", 1)
+        code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
+        self.assertEqual(code, 1)
+        self.assertTrue(any("Sack size" in e["message"] for e in res["errors"]))
 
     def test_inferred_row_is_ignored(self):
         code, res = run("validate", "--today", TODAY)
@@ -233,6 +244,105 @@ class Consumption(Base):
         self.assertAlmostEqual(total, sum(r["kg"] for r in self.res["intervals"]), places=1)
         self.assertEqual([p["period"] for p in self.res["periods"]], ["2024/25", "2025/26"])
 
+
+
+LEVEL_HEADER = ("| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since "
+                "| Level after | Level (sacks) | Level before fill (sacks) | Event | Source | Note |\n"
+                "|---|---|---|---|---|---|---|---|---|---|---|---|\n")
+
+
+class LevelReadings(Base):
+    """Level readings in sacks between fills (fictional values, sack size 15 kg)."""
+
+    ROWS = [
+        "| 2025-01-05 | 10000h00 | 20:00 | | 10 | | mark | 30 | 20 | | D | |",
+        "| 2025-01-07 | 10040h00 | 24:00 | | | | | 26 | | | D | |",
+        "| 2025-01-08 | | 26:00 | | | | | | | | D | counters only |",
+        "| 2025-01-10 | 10100h00 | 30:00 | | | | | 20 | | | D | |",
+        "| 2025-01-12 | 10150h00 | 35:00 | | 10 | | mark | 30 | 18 | | D | |",
+    ]
+
+    def level_text(self, rows):
+        lines = self.text.splitlines()
+        i = next(n for n, l in enumerate(lines) if l.strip() == "## Readings")
+        j = i + 1
+        while not lines[j].startswith("|"):
+            j += 1
+        k = j
+        while k < len(lines) and lines[k].startswith("|"):
+            k += 1
+        body = LEVEL_HEADER + "\n".join(rows)
+        return "\n".join(lines[:j] + body.splitlines() + lines[k:]) + "\n"
+
+    def forbrug(self, rows=None):
+        text = self.level_text(rows or self.ROWS)
+        if "Sack size (kg)" not in text:
+            raise AssertionError("fixture needs a sack size")
+        return run("forbrug", "--per", "interval", text=text, tmp=self.tmp)
+
+    def test_intervals_between_levels(self):
+        code, res = self.forbrug()
+        self.assertEqual(code, 0)
+        got = [(r["from"], r["to"], r["sacks"], r["kg"]) for r in res["level_intervals"]]
+        self.assertEqual(got, [("2025-01-05", "2025-01-07", 4, 60),
+                               ("2025-01-07", "2025-01-10", 6, 90),
+                               ("2025-01-10", "2025-01-12", 2, 30)])
+
+    def test_counter_only_row_does_not_break_chain(self):
+        _, res = self.forbrug()
+        r = res["level_intervals"][1]
+        self.assertEqual((r["burner_hours"], r["kg_per_burner_hour"]), (6, 15))
+        self.assertEqual((r["hours"], r["kg_per_hour"]), (60, 1.5))
+
+    def test_level_summary_needs_three(self):
+        _, res = self.forbrug()
+        s = res["level_summary"]
+        self.assertEqual((s["level_intervals"], s["kg_per_burner_hour_n"]), (3, 3))
+        self.assertEqual(s["kg_per_burner_hour_median"], 15)
+        _, res = self.forbrug(self.ROWS[:3])
+        self.assertIsNone(res["level_summary"]["kg_per_burner_hour_median"])
+
+    def test_headline_unchanged_by_levels(self):
+        _, res = self.forbrug()
+        self.assertEqual(res["summary"]["exact_intervals"], 1)
+        self.assertEqual(len(res["intervals"]), 1)
+
+    def test_fill_without_level_before_breaks_chain(self):
+        rows = list(self.ROWS)
+        rows[4] = "| 2025-01-12 | 10150h00 | 35:00 | | 10 | | mark | 30 | | | D | |"
+        _, res = self.forbrug(rows)
+        self.assertEqual([r["to"] for r in res["level_intervals"]], ["2025-01-07", "2025-01-10"])
+
+    def test_level_before_without_fill_is_an_error(self):
+        rows = list(self.ROWS)
+        rows[1] = "| 2025-01-07 | 10040h00 | 24:00 | | | | | 26 | 26 | | D | |"
+        code, res = run("validate", text=self.level_text(rows), tmp=self.tmp)
+        self.assertEqual(code, 1)
+        self.assertTrue(any("without a fill" in e["message"] for e in res["errors"]))
+
+    def test_fill_mismatch_warns(self):
+        rows = list(self.ROWS)
+        rows[4] = "| 2025-01-12 | 10150h00 | 35:00 | | 10 | | mark | 30 | 15 | | D | |"
+        _, res = run("validate", text=self.level_text(rows), tmp=self.tmp)
+        self.assertTrue(any("sacks were added" in w["message"] for w in res["warnings"]))
+
+    def test_level_rise_without_fill_warns_and_skips(self):
+        rows = list(self.ROWS)
+        rows[2] = "| 2025-01-08 | | 26:00 | | | | | 28 | | | D | |"
+        _, res = self.forbrug(rows)
+        self.assertNotIn("2025-01-08", [r["to"] for r in res["level_intervals"]])
+        _, v = run("validate", text=self.level_text(rows), tmp=self.tmp)
+        self.assertTrue(any("without a fill" in w["message"] for w in v["warnings"]))
+
+    def test_inferred_level_not_used(self):
+        rows = list(self.ROWS)
+        rows[1] = "| 2025-01-07 | | | | | | | 26 | | | I | |"
+        _, res = self.forbrug(rows)
+        self.assertEqual([r["to"] for r in res["level_intervals"]], ["2025-01-10", "2025-01-12"])
+
+    def test_logbook_without_level_columns_has_none(self):
+        _, res = run("forbrug")
+        self.assertEqual(res["level_intervals"], [])
 
 class Status(Base):
     def states(self, today):

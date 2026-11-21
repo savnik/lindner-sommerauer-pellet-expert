@@ -103,6 +103,13 @@ precedence, and this skill is not affiliated with the manufacturer.
   before the reset: leave it empty; the script marks a gap.
 - Pellet fills: ask for "Level after" if the owner did not say it. Two fills
   ending at the same level are what make an exact consumption figure.
+- Levels in sacks: when the owner reads the store on a sack scale, the number
+  goes in "Level (sacks)" (the level after any fill in that row), and on a
+  fill row the level read just before filling goes in "Level before fill
+  (sacks)". A level read without a fill is its own row, with the counters if
+  they were read. Do not put levels in Note when the logbook has these
+  columns; a logbook without them can get them added (empty in older rows),
+  shown to the owner first like any other change.
 - The level is only comparable if it is read the same way each time. When a
   logbook is started, or the owner asks, suggest one fixed way, for example
   running the suction manually before filling so the boiler's hopper is full.
@@ -172,6 +179,13 @@ depends on how hard the boiler worked in the period (a cold spell raises it),
 so a change is a reason to look, not a finding. A burner-hour figure needs the
 Aschenlade counter read at both fills and before every reset in between; when
 it is missing, say which reading would have given it.
+
+With level readings in sacks, `forbrug` adds "Consumption between level
+readings": kg, kg per day and kg per burner hour from one level reading to the
+next, fills or not. These are approximate (a level on a sack scale is an
+estimate, typically to about one sack, which weighs heavily on a short
+interval) and are kept apart from the headline figures, which come from
+fill-to-fill intervals only. Quote them as approximate, with n and range.
 
 ## Service plan
 
