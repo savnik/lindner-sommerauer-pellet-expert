@@ -170,6 +170,17 @@ def parse_hours(value):
     raise ValueError(f"cannot read '{value}' as hours")
 
 
+def parse_time(value):
+    """'14:55' or '9:05' -> datetime.time; empty -> None."""
+    v = value.strip()
+    if v in ("", "-", "–"):
+        return None
+    m = re.fullmatch(r"(\d{1,2})[:.](\d{2})", v)
+    if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59:
+        raise ValueError(f"Time '{value}' is not HH:MM")
+    return dt.time(int(m.group(1)), int(m.group(2)))
+
+
 def parse_number(value):
     v = value.strip().replace(" ", "")
     if v in ("", "-", "–"):
@@ -313,9 +324,17 @@ class Logbook:
                 r["ash"] = parse_hours(row.get("Aschenlade aktuell", ""))
                 kg = parse_number(row.get("Pellets added (kg)", ""))
                 sacks = parse_number(row.get("Sacks", ""))
+                r["lvl"] = parse_number(row.get("Level (sacks)", ""))
+                r["lvl_before"] = parse_number(row.get("Level before fill (sacks)", ""))
+                r["time"] = parse_time(row.get("Time", ""))
             except ValueError as e:
                 self.p.error(line, str(e))
                 continue
+            for k, col in (("lvl", "Level (sacks)"), ("lvl_before", "Level before fill (sacks)")):
+                if r[k] is not None and r[k] < 0:
+                    self.p.error(line, f"{col} cannot be negative")
+            if (r["lvl"] is not None or r["lvl_before"] is not None) and sack is None:
+                self.p.error(line, "a level in sacks is given but 'Sack size (kg)' is not set under Constants")
             if sacks is not None:
                 if sack is None:
                     self.p.error(line, "Sacks given but 'Sack size (kg)' is not set under Constants")
@@ -324,6 +343,13 @@ class Logbook:
                 elif abs(kg - sacks * sack) > 0.5:
                     self.p.warn(line, f"{kg:g} kg does not match {sacks:g} sacks × {sack:g} kg")
             r["kg"] = kg
+            if r["lvl_before"] is not None and kg is None:
+                self.p.error(line, "Level before fill (sacks) given on a row without a fill")
+            if r["lvl_before"] is not None and r["lvl"] is not None and kg is not None and sack:
+                # one sack is the resolution of an owner's sack scale
+                if abs((r["lvl"] - r["lvl_before"]) - kg / sack) > 1:
+                    self.p.warn(line, f"level rose from {r['lvl_before']:g} to {r['lvl']:g} sacks, "
+                                f"but {kg / sack:g} sacks were added")
             since = row.get("Since", "")
             r["since"] = parse_date(since) if since else None
             if since and r["since"] is None:
@@ -342,7 +368,8 @@ class Logbook:
                 name = "Betrieb-STD" if m.group(1).lower().startswith("b") else "Aschenlade"
                 r["resets"].add(COUNTERS[name])
             if r["source"] == "I":
-                if kg is not None or r["std"] is not None or r["ash"] is not None:
+                if (kg is not None or r["std"] is not None or r["ash"] is not None
+                        or r["lvl"] is not None or r["lvl_before"] is not None):
                     self.p.warn(line, "source I: this row is context only and is not used in arithmetic")
                 if r["resets"]:
                     self.p.error(line, "a counter reset cannot have source I")
@@ -439,7 +466,8 @@ class Logbook:
             for row in rows:
                 for col, val in row.items():
                     if col == "_line" or col in ("Date", "Since", "Valid from", "Betrieb-STD",
-                                                 "Aschenlade aktuell", "Pellets added (kg)", "Sacks"):
+                                                 "Aschenlade aktuell", "Pellets added (kg)", "Sacks",
+                                                 "Level (sacks)", "Level before fill (sacks)", "Time"):
                         continue
                     text = re.sub(r"\[[^\]]*\]", "", val)  # anchors carry page and year numbers
                     text = re.sub(r"\b\d{4}-\d{2}-\d{2}\b", "", text)  # a date is not a phone number
@@ -515,6 +543,7 @@ class Logbook:
 # ---------------------------------------------------------------- commands
 
 def cmd_validate(lb, args):
+    level_warnings(lb)
     return {"errors": lb.p.errors, "warnings": lb.p.warnings,
             "counts": {"readings": len(lb.readings), "service done": len(lb.done),
                        "plan rows": len(lb.plan)}}
@@ -540,6 +569,99 @@ def fill_intervals(lb):
                               else "approximate: level differs, unknown, or stated period")})
         prev = f
     return out
+
+
+def consumption_series(lb):
+    """Cumulative series, one point per reading, at the reading's own time.
+
+    kg: pellets consumed since the first level reading,
+        = kg added after that reading + (first level - level now) x sack size.
+        Fills drop out; a fill without a level reading costs nothing.
+    burner_h / std_h: the counters made continuous across resets.
+    A reading without a time of day is placed at 12:00 and says so."""
+    sack = lb.constants.get("sack size (kg)")
+    cum = {k: {ln: c for _, c, ln in lb.series[k]["points"]} for k in ("std", "ash")}
+    pts, base, added = [], None, 0.0
+    for r in lb.readings:
+        when = dt.datetime.combine(r["date"], r["time"] or dt.time(12, 0))
+        fill = r["kg"] is not None
+        if fill and r["since"] is not None:
+            base = None          # a stated period: start again from the next level
+            continue
+        kg = None
+        if sack:
+            if fill and r["lvl_before"] is not None and base is not None:
+                kg = added + (base - r["lvl_before"]) * sack
+            if fill and base is not None:
+                added += r["kg"]
+            if r["lvl"] is not None:
+                if base is None:
+                    base, added = r["lvl"], 0.0
+                kg_after = added + (base - r["lvl"]) * sack
+                kg = kg_after if kg is None else kg
+        p = {"t": when, "time_known": r["time"] is not None, "line": r["line"], "fill_kg": r["kg"],
+             "kg": kg, "burner_h": cum["ash"].get(r["line"]), "std_h": cum["std"].get(r["line"])}
+        if any(p[k] is not None for k in ("kg", "burner_h", "std_h")):
+            pts.append(p)
+    # a counter gap splits the counter series: drop counter values after an unbridged gap
+    for k, key in (("burner_h", "ash"), ("std_h", "std")):
+        gaps = lb.series[key]["gaps"]
+        if gaps:
+            first_gap = min(gaps)
+            for p in pts:
+                if p["t"].date() >= first_gap:
+                    p[k] = None
+    # start every series at 0 at its first point: amounts since the start
+    for k in ("kg", "burner_h", "std_h"):
+        first = next((p[k] for p in pts if p[k] is not None), None)
+        if first is not None:
+            for p in pts:
+                if p[k] is not None:
+                    p[k] -= first
+    return pts
+
+
+def series_steps(pts):
+    """Rates between consecutive points that both have kg: constant over the step."""
+    kp = [p for p in pts if p["kg"] is not None]
+    out = []
+    for a, b in zip(kp, kp[1:]):
+        days = (b["t"] - a["t"]).total_seconds() / 86400
+        if days <= 0:
+            continue
+        dkg = b["kg"] - a["kg"]
+        if dkg < -1e-9:
+            continue
+        dburn = (b["burner_h"] - a["burner_h"]) if a["burner_h"] is not None and b["burner_h"] is not None else None
+        dstd = (b["std_h"] - a["std_h"]) if a["std_h"] is not None and b["std_h"] is not None else None
+        out.append({"from": a["t"], "to": b["t"], "days": days, "kg": dkg,
+                    "burner_hours": dburn, "hours": dstd})
+    return out
+
+
+def slope(xs, ys):
+    """Least-squares slope and intercept, or (None, None) below MIN_N points."""
+    if len(xs) < MIN_N or len(set(xs)) < 2:
+        return None, None
+    mx, my = statistics.fmean(xs), statistics.fmean(ys)
+    sxx = sum((x - mx) ** 2 for x in xs)
+    b = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx
+    return b, my - b * mx
+
+
+def level_warnings(lb):
+    sack = lb.constants.get("sack size (kg)")
+    if not sack:
+        return
+    prev = None
+    for r in lb.readings:
+        if r["kg"] is not None:
+            prev = r["lvl"]
+            continue
+        if r["lvl"] is not None:
+            if prev is not None and r["lvl"] > prev + 1e-9:
+                lb.p.warn(r["line"], f"level rose from {prev:g} to {r['lvl']:g} sacks without a fill")
+            prev = r["lvl"]
 
 
 def rate(x, y):
@@ -573,6 +695,27 @@ def cmd_forbrug(lb, args):
         "kg_per_day_median": h(statistics.median(kgd)) if len(kgd) >= MIN_N else None,
         "kg_per_day_n": len(kgd),
     }
+    level_warnings(lb)
+    pts = consumption_series(lb)
+    iso = lambda t: t.isoformat(timespec="minutes")
+    series = [{"t": iso(p["t"]), "time_known": p["time_known"], "kg": h(p["kg"]),
+               "burner_hours": h(p["burner_h"]), "hours": h(p["std_h"]),
+               "fill_kg": h(p["fill_kg"])} for p in pts]
+    steps = [{"from": iso(x["from"]), "to": iso(x["to"]), "days": h(x["days"]), "kg": h(x["kg"]),
+              "kg_per_day": h(rate(x["kg"], x["days"])),
+              "burner_hours": h(x["burner_hours"]),
+              "kg_per_burner_hour": h(rate(x["kg"], x["burner_hours"])),
+              "hours": h(x["hours"]), "kg_per_hour": h(rate(x["kg"], x["hours"]))} for x in series_steps(pts)]
+    t0 = pts[0]["t"] if pts else None
+    kd = [((p["t"] - t0).total_seconds() / 86400, p["kg"]) for p in pts if p["kg"] is not None]
+    kb = [(p["burner_h"], p["kg"]) for p in pts if p["kg"] is not None and p["burner_h"] is not None]
+    kh = [(p["std_h"], p["kg"]) for p in pts if p["kg"] is not None and p["std_h"] is not None]
+    fits = {}
+    for name, xy in (("kg_per_day", kd), ("kg_per_burner_hour", kb), ("kg_per_hour", kh)):
+        b, a0 = slope([x for x, _ in xy], [y for _, y in xy])
+        fits[name] = {"slope": h(b), "intercept": h(a0), "n_points": len(xy)}
+    fits["note"] = ("least-squares slope through the cumulative points; approximate, "
+                    f"needs at least {MIN_N} points")
     # Counter hours between consecutive readings, from the counters alone.
     def counter_steps(key):
         steps = []
@@ -618,6 +761,7 @@ def cmd_forbrug(lb, args):
               "burner_days_covered": b["burner_days"]}
              for k, b in sorted(buckets.items())]
     return {"intervals": rows, "summary": summary, "per": per, "periods": table,
+            "series": series, "steps": steps, "fit": fits,
             "notes": ["hours are Betrieb-STD: hours in an operating mode with the boiler "
                       "available. burner_hours are the Aschenlade counter, summed across "
                       "'reset Aschenlade' rows: hours the burner burned (field observation, "
@@ -628,7 +772,14 @@ def cmd_forbrug(lb, args):
                       "the same level, with the counter read on both dates and no counter gap "
                       "between. The headline medians use these intervals only.",
                       "Month and season figures spread each interval evenly over its days; "
-                      "they are an allocation, not a measurement."]}
+                      "they are an allocation, not a measurement.",
+                      "series: cumulative kg consumed (from levels in sacks and fills) and "
+                      "cumulative counter hours at each reading's own time; readings without a "
+                      "Time are placed at 12:00. steps: the average rate between consecutive "
+                      "points, constant over the step. fit: the slope through all points. "
+                      "All three are approximate: a level is estimated on the owner's sack "
+                      "scale, typically to about one sack. They are not in the headline "
+                      "medians."]}
 
 
 def active_plan(lb):
@@ -875,6 +1026,14 @@ def render(command, res, problems):
         out.append("## Summary\n")
         out += [f"- {k}: {v if v is not None else '– (fewer than %d values)' % MIN_N}"
                 for k, v in res["summary"].items()]
+        if res["steps"]:
+            out.append("\n## Cumulative series (approximate)\n")
+            out.append(md_table(res["series"], ["t", "time_known", "kg", "burner_hours", "hours", "fill_kg"]))
+            out.append("### Rate between readings\n")
+            out.append(md_table(res["steps"], ["from", "to", "days", "kg", "kg_per_day", "burner_hours",
+                                               "kg_per_burner_hour", "hours", "kg_per_hour"]))
+            out.append("### Slope through all points\n")
+            out += [f"- {k}: {v}" for k, v in res["fit"].items()]
         if res["per"] in ("month", "season"):
             out.append(f"\n## Per {res['per']} (allocated)\n")
             out.append(md_table(res["periods"], ["period", "kg", "kg_days_covered", "kg_approximate",
