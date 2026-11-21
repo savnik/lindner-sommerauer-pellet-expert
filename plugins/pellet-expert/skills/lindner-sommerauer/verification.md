@@ -20,6 +20,8 @@ here before citing a line as open.
 | 15 | closed (capital L confirmed) | 41 |
 | 19 | closed (maximum displays as the word AUS) | 45 |
 | 32 | partly closed (wire colours read; terminals 11/17 and fuse assignment still open) | 42 |
+| 50 | closed by field observation (Betrieb-STD counts hours in an operating mode, boiler available) | 52 |
+| 51 | closed by field observation (Aschenlade counts burner time, not the same hours as Betrieb-STD) | 52 |
 | all others | open | — |
 
 ## 2026-09-13 — SL-P BA 2008 (merged scan, 55 pages)
@@ -88,3 +90,8 @@ here before citing a line as open.
 
 50. | parameters.md, Kap. 13 S. 3 | "Betrieb-STD": printed only as "Aktuelle Betriebsstunden. Löschen mit +/-" | The manual does not say whether it counts burner time, stoker time or powered-on time. Field observation: on one controller the count stood far below the controller's age in hours, so it is probably not powered-on time (inference) | Manufacturer, or compare its increase with a burn period of known length. The logbook (skills/logbog) treats it only as "operating hours as displayed"
 51. | parameters.md, Kap. 5 S. 1 | Aschenlade "Aktuelle Laufzeit" | Not stated whether it counts the same hours as Betrieb-STD | Compare the increase of both counters over a period with no reset of either; the logbook's readings collect exactly this
+
+
+## 2026-11-17 — counter meaning
+
+52. | parameters.md, Kap. 13 S. 3 and Kap. 5 S. 1 (closes lines 50 and 51) | What "Betrieb-STD" and the Aschenlade "Aktuelle Laufzeit" count | Field observation on firmware 080325.4: Betrieb-STD advances while the boiler is in an operating mode and available, whether or not it is firing; the Aschenlade counter advances only while the burner burns, so over the same period without a reset it rose far less than Betrieb-STD. Consistent with line 50's note that Betrieb-STD stood far below the controller's age. Not printed in the manual | Observation, one controller. kg per Betrieb-STD hour is per available hour, not per burner hour; burner hours come from the Aschenlade counter between resets. A second controller or the manufacturer would make it general

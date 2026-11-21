@@ -200,6 +200,34 @@ class Consumption(Base):
         self.assertEqual((s["kg_per_hour_median"], s["kg_per_hour_n"]), (1.5, 3))
         self.assertEqual(s["exact_intervals"], 4)
 
+    def test_burner_hours_from_ash_counter(self):
+        r = self.iv["2025-01-19"]
+        self.assertEqual((r["burner_hours"], r["kg_per_burner_hour"]), (40, 3.75))
+
+    def test_burner_hours_sum_across_ash_reset(self):
+        # 140:00 read before the reset on 2025-02-16, then 30:00 on 2025-03-02
+        self.assertEqual(self.iv["2025-03-02"]["burner_hours"], 30)
+        self.assertEqual(self.iv["2025-02-16"]["burner_hours"], 40)
+
+    def test_burner_hours_need_a_reading_at_both_fills(self):
+        self.assertIsNone(self.iv["2025-03-16"]["burner_hours"])
+        self.assertIsNone(self.iv["2025-03-30"]["burner_hours"])
+
+    def test_ash_reset_without_value_is_a_gap(self):
+        text = self.text.replace("| 2025-02-16 | 10300h00 | 140:00 |", "| 2025-02-16 | 10300h00 | |")
+        _, res = run("forbrug", text=text, tmp=self.tmp)
+        iv = {r["to"]: r for r in res["intervals"]}
+        self.assertIsNone(iv["2025-03-02"]["burner_hours"])
+        self.assertEqual(iv["2025-03-02"]["hours"], 80)
+
+    def test_headline_kg_per_burner_hour(self):
+        s = self.res["summary"]
+        self.assertEqual((s["kg_per_burner_hour_median"], s["kg_per_burner_hour_n"]), (3.75, 3))
+
+    def test_season_burner_hours(self):
+        total = sum(p["burner_hours"] or 0 for p in self.res["periods"])
+        self.assertAlmostEqual(total, 40 + 40 + 40 + 30 + 40 + 20, places=1)
+
     def test_season_totals_add_up(self):
         total = sum(p["kg"] for p in self.res["periods"])
         self.assertAlmostEqual(total, sum(r["kg"] for r in self.res["intervals"]), places=1)

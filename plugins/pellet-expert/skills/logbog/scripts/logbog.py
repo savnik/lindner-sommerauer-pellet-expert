@@ -533,8 +533,9 @@ def fill_intervals(lb):
                  and prev["level"] == f["level"])
         days = (f["date"] - start).days
         hours = lb.hours_between("std", start, f["date"])
+        burner = lb.hours_between("ash", start, f["date"])
         out.append({"from": start, "to": f["date"], "days": days, "kg": f["kg"],
-                    "exact": exact, "hours": hours, "line": f["line"],
+                    "exact": exact, "hours": hours, "burner_hours": burner, "line": f["line"],
                     "basis": (f"same level ('{f['level']}') at both fills" if exact
                               else "approximate: level differs, unknown, or stated period")})
         prev = f
@@ -553,9 +554,12 @@ def cmd_forbrug(lb, args):
                      "kg": h(iv["kg"]), "kg_per_day": h(rate(iv["kg"], iv["days"])),
                      "hours": h(iv["hours"]), "kg_per_hour": h(rate(iv["kg"], iv["hours"])),
                      "hours_per_day": h(rate(iv["hours"], iv["days"])),
+                     "burner_hours": h(iv["burner_hours"]),
+                     "kg_per_burner_hour": h(rate(iv["kg"], iv["burner_hours"])),
                      "exact": iv["exact"], "basis": iv["basis"]})
     exact = [r for r in rows if r["exact"]]
     kgh = [r["kg_per_hour"] for r in exact if r["kg_per_hour"] is not None]
+    kgb = [r["kg_per_burner_hour"] for r in exact if r["kg_per_burner_hour"] is not None]
     kgd = [r["kg_per_day"] for r in exact if r["kg_per_day"] is not None]
     summary = {
         "exact_intervals": len(exact),
@@ -563,15 +567,22 @@ def cmd_forbrug(lb, args):
         "kg_per_hour_median": h(statistics.median(kgh)) if len(kgh) >= MIN_N else None,
         "kg_per_hour_n": len(kgh),
         "kg_per_hour_range": [h(min(kgh)), h(max(kgh))] if kgh else None,
+        "kg_per_burner_hour_median": h(statistics.median(kgb)) if len(kgb) >= MIN_N else None,
+        "kg_per_burner_hour_n": len(kgb),
+        "kg_per_burner_hour_range": [h(min(kgb)), h(max(kgb))] if kgb else None,
         "kg_per_day_median": h(statistics.median(kgd)) if len(kgd) >= MIN_N else None,
         "kg_per_day_n": len(kgd),
     }
-    # Operating hours per day from counter readings alone, between consecutive readings.
-    hpd = []
-    pts = lb.series["std"]["points"]
-    for (d0, c0, _), (d1, c1, _) in zip(pts, pts[1:]):
-        if d1 > d0 and not any(d0 <= g <= d1 for g in lb.series["std"]["gaps"]):
-            hpd.append({"from": d0, "to": d1, "days": (d1 - d0).days, "hours": c1 - c0})
+    # Counter hours between consecutive readings, from the counters alone.
+    def counter_steps(key):
+        steps = []
+        pts = lb.series[key]["points"]
+        for (d0, c0, _), (d1, c1, _) in zip(pts, pts[1:]):
+            if d1 > d0 and not any(d0 <= g <= d1 for g in lb.series[key]["gaps"]):
+                steps.append({"from": d0, "to": d1, "hours": c1 - c0})
+        return steps
+    hpd = counter_steps("std")
+    bpd = counter_steps("ash")
     per = args.per
     buckets = {}
     if per in ("month", "season"):
@@ -587,23 +598,35 @@ def cmd_forbrug(lb, args):
             for i in range(n):
                 b = buckets.setdefault(key(d0 + dt.timedelta(days=i + 1)),
                                        {"kg": 0.0, "kg_days": 0, "kg_approx": False,
-                                        "hours": 0.0, "hour_days": 0})
+                                        "hours": 0.0, "hour_days": 0,
+                                        "burner_hours": 0.0, "burner_days": 0})
                 b[field] += amount / n
-                b["kg_days" if field == "kg" else "hour_days"] += 1
+                b[{"kg": "kg_days", "hours": "hour_days", "burner_hours": "burner_days"}[field]] += 1
                 if approx:
                     b["kg_approx"] = True
         for iv in ivs:
             spread(iv["from"], iv["to"], iv["kg"], "kg", not iv["exact"])
         for x in hpd:
             spread(x["from"], x["to"], x["hours"], "hours")
+        for x in bpd:
+            spread(x["from"], x["to"], x["hours"], "burner_hours")
     table = [{"period": k, "kg": h(b["kg"]) if b["kg_days"] else None,
               "kg_days_covered": b["kg_days"], "kg_approximate": b["kg_approx"],
               "hours": h(b["hours"]) if b["hour_days"] else None,
-              "hour_days_covered": b["hour_days"]}
+              "hour_days_covered": b["hour_days"],
+              "burner_hours": h(b["burner_hours"]) if b["burner_days"] else None,
+              "burner_days_covered": b["burner_days"]}
              for k, b in sorted(buckets.items())]
     return {"intervals": rows, "summary": summary, "per": per, "periods": table,
-            "notes": ["kg/h is computed only where both fills ended at the same level and "
-                      "Betrieb-STD was read on both dates, with no counter gap between.",
+            "notes": ["hours are Betrieb-STD: hours in an operating mode with the boiler "
+                      "available. burner_hours are the Aschenlade counter, summed across "
+                      "'reset Aschenlade' rows: hours the burner burned (field observation, "
+                      "verification.md line 52).",
+                      "kg/h and kg per burner hour are fuel use, not efficiency: efficiency "
+                      "needs a measurement of the heat delivered.",
+                      "kg/h and kg per burner hour are computed only where both fills ended at "
+                      "the same level, with the counter read on both dates and no counter gap "
+                      "between. The headline medians use these intervals only.",
                       "Month and season figures spread each interval evenly over its days; "
                       "they are an allocation, not a measurement."]}
 
@@ -847,14 +870,16 @@ def render(command, res, problems):
     elif command == "forbrug":
         out.append("## Consumption by fill interval\n")
         out.append(md_table(res["intervals"], ["from", "to", "days", "kg", "kg_per_day", "hours",
-                                               "kg_per_hour", "hours_per_day", "exact", "basis"]))
+                                               "kg_per_hour", "hours_per_day", "burner_hours",
+                                               "kg_per_burner_hour", "exact", "basis"]))
         out.append("## Summary\n")
         out += [f"- {k}: {v if v is not None else '– (fewer than %d values)' % MIN_N}"
                 for k, v in res["summary"].items()]
         if res["per"] in ("month", "season"):
             out.append(f"\n## Per {res['per']} (allocated)\n")
             out.append(md_table(res["periods"], ["period", "kg", "kg_days_covered", "kg_approximate",
-                                                 "hours", "hour_days_covered"]))
+                                                 "hours", "hour_days_covered",
+                                                 "burner_hours", "burner_days_covered"]))
         out.append("")
         out += [f"Note: {n}" for n in res["notes"]]
     elif command == "status":
