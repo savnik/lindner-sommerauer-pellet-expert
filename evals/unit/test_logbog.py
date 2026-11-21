@@ -86,11 +86,11 @@ class Validate(Base):
 
     def test_template_row_with_pellet_product_is_valid(self):
         text = TEMPLATE.read_text(encoding="utf-8")
-        header = ("| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since "
+        header = ("| Date | Time | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since "
                   "| Level after | Level (sacks) | Level before fill (sacks) | Pellet product | Event "
-                  "| Source | Note |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
+                  "| Source | Note |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
         self.assertIn(header, text)
-        text = text.replace(header, header + "| 2025-11-01 | | | 90 | | | full | | | Brand X premium | | O | |\n")
+        text = text.replace(header, header + "| 2025-11-01 | | | | 90 | | | full | | | Brand X premium | | O | |\n")
         code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
         self.assertEqual(code, 0, res["errors"])
         self.assertEqual(res["counts"]["readings"], 1)
@@ -99,7 +99,7 @@ class Validate(Base):
         text = TEMPLATE.read_text(encoding="utf-8")
         text = text.replace("|---|---|---|---|---|---|---|---|---|---|---|---|---|\n",
                             "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
-                            "| 2025-11-01 | | | | | | | 20 | | | | D | |\n", 1)
+                            "| 2025-11-01 | | | | | | | | 20 | | | | D | |\n", 1)
         code, res = run("validate", "--today", TODAY, text=text, tmp=self.tmp)
         self.assertEqual(code, 1)
         self.assertTrue(any("Sack size" in e["message"] for e in res["errors"]))
@@ -246,20 +246,20 @@ class Consumption(Base):
 
 
 
-LEVEL_HEADER = ("| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since "
+LEVEL_HEADER = ("| Date | Time | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since "
                 "| Level after | Level (sacks) | Level before fill (sacks) | Event | Source | Note |\n"
-                "|---|---|---|---|---|---|---|---|---|---|---|---|\n")
+                "|---|---|---|---|---|---|---|---|---|---|---|---|---|\n")
 
 
-class LevelReadings(Base):
-    """Level readings in sacks between fills (fictional values, sack size 15 kg)."""
+class Series(Base):
+    """Cumulative series from levels in sacks (fictional values, sack size 15 kg)."""
 
     ROWS = [
-        "| 2025-01-05 | 10000h00 | 20:00 | | 10 | | mark | 30 | 20 | | D | |",
-        "| 2025-01-07 | 10040h00 | 24:00 | | | | | 26 | | | D | |",
-        "| 2025-01-08 | | 26:00 | | | | | | | | D | counters only |",
-        "| 2025-01-10 | 10100h00 | 30:00 | | | | | 20 | | | D | |",
-        "| 2025-01-12 | 10150h00 | 35:00 | | 10 | | mark | 30 | 18 | | D | |",
+        "| 2025-01-05 | 15:00 | 10000h00 | 20:00 | | 10 | | mark | 30 | 20 | | D | |",
+        "| 2025-01-07 | 15:00 | 10040h00 | 24:00 | | | | | 26 | | | D | |",
+        "| 2025-01-08 | 15:00 | | 26:00 | | | | | | | | D | counters only |",
+        "| 2025-01-10 | 15:00 | 10100h00 | 30:00 | | | | | 20 | | | D | |",
+        "| 2025-01-12 | 03:00 | 10150h00 | 35:00 | | 10 | | mark | 28 | 18 | | D | |",
     ]
 
     def level_text(self, rows):
@@ -275,74 +275,93 @@ class LevelReadings(Base):
         return "\n".join(lines[:j] + body.splitlines() + lines[k:]) + "\n"
 
     def forbrug(self, rows=None):
-        text = self.level_text(rows or self.ROWS)
-        if "Sack size (kg)" not in text:
-            raise AssertionError("fixture needs a sack size")
-        return run("forbrug", "--per", "interval", text=text, tmp=self.tmp)
+        return run("forbrug", "--per", "interval", text=self.level_text(rows or self.ROWS), tmp=self.tmp)
 
-    def test_intervals_between_levels(self):
+    def test_cumulative_kg_drops_fills(self):
         code, res = self.forbrug()
         self.assertEqual(code, 0)
-        got = [(r["from"], r["to"], r["sacks"], r["kg"]) for r in res["level_intervals"]]
-        self.assertEqual(got, [("2025-01-05", "2025-01-07", 4, 60),
-                               ("2025-01-07", "2025-01-10", 6, 90),
-                               ("2025-01-10", "2025-01-12", 2, 30)])
+        got = [(p["t"], p["kg"]) for p in res["series"]]
+        self.assertEqual(got, [("2025-01-05T15:00", 0), ("2025-01-07T15:00", 60),
+                               ("2025-01-08T15:00", None), ("2025-01-10T15:00", 150),
+                               ("2025-01-12T03:00", 180)])
 
-    def test_counter_only_row_does_not_break_chain(self):
+    def test_counters_start_at_zero_and_carry_time(self):
         _, res = self.forbrug()
-        r = res["level_intervals"][1]
-        self.assertEqual((r["burner_hours"], r["kg_per_burner_hour"]), (6, 15))
-        self.assertEqual((r["hours"], r["kg_per_hour"]), (60, 1.5))
+        self.assertEqual([p["burner_hours"] for p in res["series"]], [0, 4, 6, 10, 15])
+        self.assertEqual(res["series"][-1]["fill_kg"], 150)
+        self.assertTrue(all(p["time_known"] for p in res["series"]))
 
-    def test_level_summary_needs_three(self):
+    def test_steps_use_time_of_day(self):
         _, res = self.forbrug()
-        s = res["level_summary"]
-        self.assertEqual((s["level_intervals"], s["kg_per_burner_hour_n"]), (3, 3))
-        self.assertEqual(s["kg_per_burner_hour_median"], 15)
-        _, res = self.forbrug(self.ROWS[:3])
-        self.assertIsNone(res["level_summary"]["kg_per_burner_hour_median"])
+        last = res["steps"][-1]
+        self.assertEqual((last["days"], last["kg"], last["kg_per_day"]), (1.5, 30, 20))
+        mid = res["steps"][1]
+        self.assertEqual((mid["burner_hours"], mid["kg_per_burner_hour"]), (6, 15))
+        self.assertEqual((mid["hours"], mid["kg_per_hour"]), (60, 1.5))
+
+    def test_fit_through_points(self):
+        _, res = self.forbrug()
+        f = res["fit"]["kg_per_burner_hour"]
+        self.assertEqual(f["n_points"], 4)
+        self.assertAlmostEqual(f["slope"], 12.33, places=2)
+
+    def test_fit_needs_three_points(self):
+        _, res = self.forbrug(self.ROWS[:2])
+        self.assertIsNone(res["fit"]["kg_per_burner_hour"]["slope"])
+
+    def test_fill_without_level_before_keeps_chain(self):
+        rows = list(self.ROWS)
+        rows[4] = "| 2025-01-12 | 03:00 | 10150h00 | 35:00 | | 10 | | mark | 28 | | | D | |"
+        _, res = self.forbrug(rows)
+        self.assertEqual(res["series"][-1]["kg"], 180)
+
+    def test_missing_time_is_noon(self):
+        rows = [r.replace("| 15:00 |", "| |") for r in self.ROWS]
+        _, res = self.forbrug(rows)
+        self.assertEqual(res["series"][0]["t"], "2025-01-05T12:00")
+        self.assertFalse(res["series"][0]["time_known"])
+
+    def test_bad_time_is_an_error(self):
+        rows = list(self.ROWS)
+        rows[1] = rows[1].replace("| 15:00 |", "| 25:00 |")
+        code, res = run("validate", text=self.level_text(rows), tmp=self.tmp)
+        self.assertEqual(code, 1)
+        self.assertTrue(any("HH:MM" in e["message"] for e in res["errors"]))
 
     def test_headline_unchanged_by_levels(self):
         _, res = self.forbrug()
         self.assertEqual(res["summary"]["exact_intervals"], 1)
-        self.assertEqual(len(res["intervals"]), 1)
-
-    def test_fill_without_level_before_breaks_chain(self):
-        rows = list(self.ROWS)
-        rows[4] = "| 2025-01-12 | 10150h00 | 35:00 | | 10 | | mark | 30 | | | D | |"
-        _, res = self.forbrug(rows)
-        self.assertEqual([r["to"] for r in res["level_intervals"]], ["2025-01-07", "2025-01-10"])
 
     def test_level_before_without_fill_is_an_error(self):
         rows = list(self.ROWS)
-        rows[1] = "| 2025-01-07 | 10040h00 | 24:00 | | | | | 26 | 26 | | D | |"
+        rows[1] = "| 2025-01-07 | 15:00 | 10040h00 | 24:00 | | | | | 26 | 26 | | D | |"
         code, res = run("validate", text=self.level_text(rows), tmp=self.tmp)
         self.assertEqual(code, 1)
         self.assertTrue(any("without a fill" in e["message"] for e in res["errors"]))
 
     def test_fill_mismatch_warns(self):
         rows = list(self.ROWS)
-        rows[4] = "| 2025-01-12 | 10150h00 | 35:00 | | 10 | | mark | 30 | 15 | | D | |"
+        rows[4] = "| 2025-01-12 | 03:00 | 10150h00 | 35:00 | | 10 | | mark | 28 | 15 | | D | |"
         _, res = run("validate", text=self.level_text(rows), tmp=self.tmp)
         self.assertTrue(any("sacks were added" in w["message"] for w in res["warnings"]))
 
-    def test_level_rise_without_fill_warns_and_skips(self):
+    def test_level_rise_without_fill_warns(self):
         rows = list(self.ROWS)
-        rows[2] = "| 2025-01-08 | | 26:00 | | | | | 28 | | | D | |"
-        _, res = self.forbrug(rows)
-        self.assertNotIn("2025-01-08", [r["to"] for r in res["level_intervals"]])
+        rows[3] = "| 2025-01-10 | 15:00 | 10100h00 | 30:00 | | | | | 28 | | | D | |"
         _, v = run("validate", text=self.level_text(rows), tmp=self.tmp)
         self.assertTrue(any("without a fill" in w["message"] for w in v["warnings"]))
 
     def test_inferred_level_not_used(self):
         rows = list(self.ROWS)
-        rows[1] = "| 2025-01-07 | | | | | | | 26 | | | I | |"
+        rows[1] = "| 2025-01-07 | 15:00 | | | | | | | 26 | | | I | |"
         _, res = self.forbrug(rows)
-        self.assertEqual([r["to"] for r in res["level_intervals"]], ["2025-01-10", "2025-01-12"])
+        self.assertNotIn("2025-01-07T15:00", [p["t"] for p in res["series"]])
 
-    def test_logbook_without_level_columns_has_none(self):
+    def test_logbook_without_level_columns_has_no_kg_series(self):
         _, res = run("forbrug")
-        self.assertEqual(res["level_intervals"], [])
+        self.assertTrue(all(p["kg"] is None for p in res["series"]))
+        self.assertEqual(res["steps"], [])
+
 
 class Status(Base):
     def states(self, today):

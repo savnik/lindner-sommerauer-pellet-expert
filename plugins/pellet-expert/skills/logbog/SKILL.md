@@ -103,6 +103,10 @@ precedence, and this skill is not affiliated with the manufacturer.
   before the reset: leave it empty; the script marks a gap.
 - Pellet fills: ask for "Level after" if the owner did not say it. Two fills
   ending at the same level are what make an exact consumption figure.
+- Time: ask for the time of day of a reading when the owner gives counters or
+  a level ("hvad var klokken?"), and put it in "Time" (HH:MM). Rates over a
+  day or two depend on it. A time taken from a photo's file name or metadata
+  is fine; one you assume yourself is not a reading and goes in Note.
 - Levels in sacks: when the owner reads the store on a sack scale, the number
   goes in "Level (sacks)" (the level after any fill in that row), and on a
   fill row the level read just before filling goes in "Level before fill
@@ -180,12 +184,22 @@ so a change is a reason to look, not a finding. A burner-hour figure needs the
 Aschenlade counter read at both fills and before every reset in between; when
 it is missing, say which reading would have given it.
 
-With level readings in sacks, `forbrug` adds "Consumption between level
-readings": kg, kg per day and kg per burner hour from one level reading to the
-next, fills or not. These are approximate (a level on a sack scale is an
-estimate, typically to about one sack, which weighs heavily on a short
-interval) and are kept apart from the headline figures, which come from
-fill-to-fill intervals only. Quote them as approximate, with n and range.
+With level readings in sacks, `forbrug` treats the readings as the time
+series they are: irregular readings of quantities that accumulate and reset.
+It gives
+- `series`: one point per reading at its own time: cumulative kg consumed
+  (kg added since the first level reading plus the fall in level times the
+  sack size, so fills drop out) and the counters made continuous across
+  resets, each starting at 0;
+- `steps`: the average rate between consecutive points (kg per day, kg per
+  burner hour, kg per Betrieb-STD hour), constant over the step;
+- `fit`: the least-squares slope through all points (n ≥ 3), which is less
+  sensitive to one rough level reading than any single step.
+All three are approximate (a level on a sack scale is an estimate, typically
+to about one sack, which weighs heavily on a short step) and are kept apart
+from the headline figures, which come from fill-to-fill intervals only. Quote
+them as approximate, with n. Show a rate as constant over its step, never as
+a point at the middle of an interval, and put every reading at its own time.
 
 ## Service plan
 

@@ -37,6 +37,8 @@ created:
 
 Counter readings and pellet fills. One row per occasion.
 
+- Time: optional, the time of day of the reading (HH:MM). Consumption rates
+  between readings use it; a reading without a time is placed at 12:00.
 - Betrieb-STD and Aschenlade aktuell: as the display shows them ("12345h26",
   "87:30"). Betrieb-STD is in Zusatzparameter Service [SL-P BA 2008, Kap. 13,
   S. 3]; Aschenlade aktuell is the first number of the Aschenlade item in
@@ -53,8 +55,9 @@ Counter readings and pellet fills. One row per occasion.
   a sack scale. "Level (sacks)" is the number of sacks in the store as read
   at this row, after any fill in it; "Level before fill (sacks)" is read just
   before filling, on a fill row only. A level read between fills is a row of
-  its own. The script then gives approximate consumption between level
-  readings, alongside the fill-to-fill figures.
+  its own. The script then gives cumulative consumption at each reading, the
+  rate between readings and the slope through them (approximate), alongside
+  the fill-to-fill figures.
 - Measure the level the same way every time. One way: before filling, run
   the suction manually so the boiler's own hopper is full, then fill the
   store and read the level. This is an owner practice, not printed in the
@@ -66,8 +69,8 @@ Counter readings and pellet fills. One row per occasion.
   zero. The counter values in that row are the values just BEFORE the reset;
   leave them empty if they were not read, and the script will mark a gap.
 
-| Date | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Level (sacks) | Level before fill (sacks) | Pellet product | Event | Source | Note |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Date | Time | Betrieb-STD | Aschenlade aktuell | Pellets added (kg) | Sacks | Since | Level after | Level (sacks) | Level before fill (sacks) | Pellet product | Event | Source | Note |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Service done
 
