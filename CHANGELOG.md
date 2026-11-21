@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-11-21
+
+### Added
+
+- Logbook: optional Readings columns "Level (sacks)" and "Level before fill
+  (sacks)", for a store read on a sack scale. A level read between fills is a
+  row of its own instead of a Note.
+- Logbook: optional Readings column "Time" (HH:MM) for the time of day of a
+  reading; a reading without one is placed at 12:00.
+- `logbog.py forbrug`: the readings as a time series. `series`: cumulative kg
+  consumed (fills drop out) and cumulative counter hours, continuous across
+  resets, at each reading's own time. `steps`: the average rate between
+  consecutive points, constant over the step. `fit`: the least-squares slope
+  through all points (n ≥ 3) for kg per day, per burner hour and per
+  Betrieb-STD hour. All marked approximate and kept out of the fill-to-fill
+  headline figures.
+- `logbog.py silo`: store level since the last fill, average rate over the
+  last week, and the dates the store falls below the refill level (Constants
+  "Refill level (sacks)", else 5) and runs empty. The skill reports the
+  latest expected next fill right after every fill and offers a calendar
+  reminder the day before: `silo --ics FILE` writes a local .ics file with an
+  alarm at 09:00.
+- `graddage.py`: heating degree days per day from DMI's open Climate Data API
+  for the home's 10 km grid square, into a local CSV. First run asks for the
+  address; only its postal code is sent (to OpenStreetMap) and only the
+  square's id is saved and sent to DMI. `logbog.py forbrug --graddage CSV`
+  adds burner hours per day and per degree day and kg per degree day.
+- `logbog.py validate`: a Time that is not HH:MM is an error; a level before
+  fill on a row without a fill is an error; a level that rises without a fill, or a fill whose levels do not
+  match the sacks added (by more than one sack), is a warning.
+
 ## [0.3.3] - 2026-11-17
 
 ### Changed
