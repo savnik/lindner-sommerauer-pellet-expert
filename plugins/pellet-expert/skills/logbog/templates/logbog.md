@@ -32,6 +32,7 @@ created:
 |---|---|---|---|
 | Sack size (kg) | | | |
 | Aschenlade setting (h) | | | |
+| Refill level (sacks) | | | |
 
 ## Readings
 

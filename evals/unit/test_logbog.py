@@ -363,6 +363,33 @@ class Series(Base):
         self.assertEqual(res["steps"], [])
 
 
+
+class Silo(Series):
+    def silo(self, rows=None, *extra):
+        return run("silo", "--today", "2025-01-12", *extra, text=self.level_text(rows or self.ROWS), tmp=self.tmp)
+
+    def test_levels_since_last_fill(self):
+        _, res = self.silo()
+        self.assertEqual(res["since"], "2025-01-12T03:00")
+        self.assertEqual([p["sacks"] for p in res["levels"]], [28])
+
+    def test_rate_over_window_and_forecast(self):
+        _, res = self.silo()
+        r = res["rate"]   # 2025-01-05 15:00 -> 01-12 03:00: 180 kg over 6.5 days
+        self.assertEqual((r["days"], r["kg_per_day"]), (6.5, round(180 / 6.5, 2)))
+        self.assertFalse(r["short_window"])   # 6.5 days is within half a day of 7
+        per_day = 180 / 6.5 / 15
+        self.assertEqual(res["days_left"], round(28 / per_day, 2))
+        self.assertLess(res["below_threshold_at"], res["empty_at"])
+
+    def test_window_starts_at_last_point_before_it(self):
+        _, res = self.silo(None, "--dage", "3")
+        self.assertEqual(res["rate"]["from"], "2025-01-07T15:00")
+
+    def test_no_levels_no_forecast(self):
+        _, res = run("silo", "--today", TODAY)
+        self.assertNotIn("empty_at", res)
+
 class Status(Base):
     def states(self, today):
         _, res = run("status", "--today", today)

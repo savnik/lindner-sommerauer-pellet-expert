@@ -621,6 +621,35 @@ def consumption_series(lb):
     return pts
 
 
+def read_degree_days(path):
+    """Local CSV written by graddage.py: {date: (degree days, qc status)}."""
+    import csv
+    out = {}
+    with open(path, encoding="utf-8") as fh:
+        for r in csv.DictReader(l for l in fh if not l.startswith("#")):
+            out[dt.date.fromisoformat(r["date"])] = (float(r["degree_days"]), r.get("qc_status", ""))
+    return out
+
+
+def degree_days_between(dd, t0, t1):
+    """Degree days from t0 to t1, each day's value spread evenly over its 24 hours.
+    (None, _) when a day in between is missing. Second value: any day not yet
+    quality controlled by DMI."""
+    total, prelim = 0.0, False
+    d = t0.date()
+    while d <= t1.date():
+        start = max(t0, dt.datetime.combine(d, dt.time()))
+        end = min(t1, dt.datetime.combine(d + dt.timedelta(days=1), dt.time()))
+        frac = (end - start).total_seconds() / 86400
+        if frac > 0:
+            if d not in dd:
+                return None, prelim
+            total += dd[d][0] * frac
+            prelim = prelim or dd[d][1] == "none"
+        d += dt.timedelta(days=1)
+    return total, prelim
+
+
 def series_steps(pts):
     """Rates between consecutive points that both have kg: constant over the step."""
     kp = [p for p in pts if p["kg"] is not None]
@@ -697,21 +726,50 @@ def cmd_forbrug(lb, args):
     }
     level_warnings(lb)
     pts = consumption_series(lb)
+    dd = read_degree_days(args.graddage) if getattr(args, "graddage", None) else None
+    if dd is not None and pts:
+        for p in pts:
+            p["dd"], p["dd_prelim"] = degree_days_between(dd, pts[0]["t"], p["t"])
     iso = lambda t: t.isoformat(timespec="minutes")
     series = [{"t": iso(p["t"]), "time_known": p["time_known"], "kg": h(p["kg"]),
                "burner_hours": h(p["burner_h"]), "hours": h(p["std_h"]),
-               "fill_kg": h(p["fill_kg"])} for p in pts]
+               "fill_kg": h(p["fill_kg"]), "degree_days": h(p.get("dd"))} for p in pts]
+    burner_steps = []
+    bp = [p for p in pts if p["burner_h"] is not None]
+    for a, b in zip(bp, bp[1:]):
+        days = (b["t"] - a["t"]).total_seconds() / 86400
+        if days <= 0:
+            continue
+        bh = b["burner_h"] - a["burner_h"]
+        row = {"from": iso(a["t"]), "to": iso(b["t"]), "days": h(days), "burner_hours": h(bh),
+               "burner_hours_per_day": h(bh / days)}
+        if dd is not None:
+            g, pre = degree_days_between(dd, a["t"], b["t"])
+            row.update({"degree_days": h(g), "burner_hours_per_degree_day": h(rate(bh, g)),
+                        "preliminary_weather": pre})
+        burner_steps.append(row)
     steps = [{"from": iso(x["from"]), "to": iso(x["to"]), "days": h(x["days"]), "kg": h(x["kg"]),
               "kg_per_day": h(rate(x["kg"], x["days"])),
               "burner_hours": h(x["burner_hours"]),
               "kg_per_burner_hour": h(rate(x["kg"], x["burner_hours"])),
-              "hours": h(x["hours"]), "kg_per_hour": h(rate(x["kg"], x["hours"]))} for x in series_steps(pts)]
+              "hours": h(x["hours"]), "kg_per_hour": h(rate(x["kg"], x["hours"])),
+              **({"degree_days": h(g), "kg_per_degree_day": h(rate(x["kg"], g))}
+                 if dd is not None and (g := degree_days_between(dd, x["from"], x["to"])[0]) is not None
+                 else ({"degree_days": None, "kg_per_degree_day": None} if dd is not None else {}))}
+             for x in series_steps(pts)]
     t0 = pts[0]["t"] if pts else None
     kd = [((p["t"] - t0).total_seconds() / 86400, p["kg"]) for p in pts if p["kg"] is not None]
     kb = [(p["burner_h"], p["kg"]) for p in pts if p["kg"] is not None and p["burner_h"] is not None]
     kh = [(p["std_h"], p["kg"]) for p in pts if p["kg"] is not None and p["std_h"] is not None]
+    bd = [((p["t"] - t0).total_seconds() / 86400, p["burner_h"]) for p in pts if p["burner_h"] is not None]
+    pairs = [("kg_per_day", kd), ("kg_per_burner_hour", kb), ("kg_per_hour", kh), ("burner_hours_per_day", bd)]
+    if dd is not None:
+        pairs += [("burner_hours_per_degree_day",
+                   [(p["dd"], p["burner_h"]) for p in pts if p["burner_h"] is not None and p.get("dd") is not None]),
+                  ("kg_per_degree_day",
+                   [(p["dd"], p["kg"]) for p in pts if p["kg"] is not None and p.get("dd") is not None])]
     fits = {}
-    for name, xy in (("kg_per_day", kd), ("kg_per_burner_hour", kb), ("kg_per_hour", kh)):
+    for name, xy in pairs:
         b, a0 = slope([x for x, _ in xy], [y for _, y in xy])
         fits[name] = {"slope": h(b), "intercept": h(a0), "n_points": len(xy)}
     fits["note"] = ("least-squares slope through the cumulative points; approximate, "
@@ -761,7 +819,10 @@ def cmd_forbrug(lb, args):
               "burner_days_covered": b["burner_days"]}
              for k, b in sorted(buckets.items())]
     return {"intervals": rows, "summary": summary, "per": per, "periods": table,
-            "series": series, "steps": steps, "fit": fits,
+            "series": series, "steps": steps, "burner_steps": burner_steps, "fit": fits,
+            "degree_days_source": (f"{args.graddage}: DMI acc_heating_degree_days_17, each day spread "
+                                   "evenly over its hours; 'preliminary_weather' marks days DMI has "
+                                   "not yet quality controlled") if dd is not None else None,
             "notes": ["hours are Betrieb-STD: hours in an operating mode with the boiler "
                       "available. burner_hours are the Aschenlade counter, summed across "
                       "'reset Aschenlade' rows: hours the burner burned (field observation, "
@@ -780,6 +841,53 @@ def cmd_forbrug(lb, args):
                       "All three are approximate: a level is estimated on the owner's sack "
                       "scale, typically to about one sack. They are not in the headline "
                       "medians."]}
+
+
+def cmd_silo(lb, args):
+    """Store level since the last fill, and when it runs out at the recent rate."""
+    sack = lb.constants.get("sack size (kg)")
+    if args.under is None:
+        args.under = lb.constants.get("refill level (sacks)") or 5.0
+    pts = consumption_series(lb)
+    when = lambda r: dt.datetime.combine(r["date"], r["time"] or dt.time(12, 0))
+    out = {"today": str(lb.today), "sack_kg": sack, "threshold_sacks": args.under, "window_days": args.dage}
+    fills = [r for r in lb.readings if r["kg"] is not None and r["lvl"] is not None]
+    lv = [r for r in lb.readings if r["lvl"] is not None]
+    if not sack or not lv:
+        out["verdict"] = "no levels in sacks, or no sack size: nothing to show"
+        return out
+    start = when(fills[-1]) if fills else when(lv[0])
+    out["since"] = start.isoformat(timespec="minutes")
+    out["levels"] = [{"t": when(r).isoformat(timespec="minutes"), "sacks": r["lvl"],
+                      "fill": r["kg"] is not None} for r in lv if when(r) >= start]
+    last = lv[-1]
+    t_last, l_last = when(last), last["lvl"]
+    kp = [p for p in pts if p["kg"] is not None]
+    t_from = t_last - dt.timedelta(days=args.dage)
+    before = [p for p in kp if p["t"] <= t_from]
+    a = before[-1] if before else (kp[0] if kp else None)
+    b = kp[-1] if kp else None
+    if a is None or b is None or b["t"] <= a["t"]:
+        out["verdict"] = "too few level readings for a rate"
+        return out
+    days = (b["t"] - a["t"]).total_seconds() / 86400
+    kg_day = (b["kg"] - a["kg"]) / days
+    out["rate"] = {"from": a["t"].isoformat(timespec="minutes"), "to": b["t"].isoformat(timespec="minutes"),
+                   "days": h(days), "kg_per_day": h(kg_day), "sacks_per_day": h(kg_day / sack),
+                   "short_window": days < args.dage - 0.5}
+    out["last_level"] = {"t": t_last.isoformat(timespec="minutes"), "sacks": l_last}
+    if kg_day <= 0:
+        out["verdict"] = "no consumption in the window: no forecast"
+        return out
+    per_day = kg_day / sack
+    at = lambda lvl: (t_last + dt.timedelta(days=(l_last - lvl) / per_day)).isoformat(timespec="minutes")
+    out["below_threshold_at"] = at(args.under) if l_last > args.under else out["last_level"]["t"]
+    out["empty_at"] = at(0)
+    out["days_left"] = h(l_last / per_day)
+    out["note"] = ("straight line from the last level reading at the average rate of the window; "
+                   "approximate: levels are estimated on the sack scale, and the rate moves with the "
+                   "weather. Inference from the owner's own rows.")
+    return out
 
 
 def active_plan(lb):
@@ -1032,6 +1140,10 @@ def render(command, res, problems):
             out.append("### Rate between readings\n")
             out.append(md_table(res["steps"], ["from", "to", "days", "kg", "kg_per_day", "burner_hours",
                                                "kg_per_burner_hour", "hours", "kg_per_hour"]))
+            out.append("### Burner hours between readings\n")
+            out.append(md_table(res["burner_steps"], ["from", "to", "days", "burner_hours", "burner_hours_per_day",
+                                                      "degree_days", "burner_hours_per_degree_day",
+                                                      "preliminary_weather"]))
             out.append("### Slope through all points\n")
             out += [f"- {k}: {v}" for k, v in res["fit"].items()]
         if res["per"] in ("month", "season"):
@@ -1041,6 +1153,17 @@ def render(command, res, problems):
                                                  "burner_hours", "burner_days_covered"]))
         out.append("")
         out += [f"Note: {n}" for n in res["notes"]]
+    elif command == "silo":
+        out.append(f"## Store level since {res.get('since', '–')}\n")
+        if res.get("levels"):
+            out.append(md_table(res["levels"], ["t", "sacks", "fill"]))
+        if res.get("rate"):
+            r = res["rate"]
+            out.append(f"Average over {r['days']} days ({r['from']} to {r['to']}): {r['kg_per_day']} kg/day, "
+                       f"{r['sacks_per_day']} sacks/day" + (" (shorter than the window asked for)" if r["short_window"] else ""))
+        for k in ("last_level", "below_threshold_at", "empty_at", "days_left", "verdict", "note"):
+            if k in res:
+                out.append(f"- {k}: {res[k]}")
     elif command == "status":
         out.append(f"## Service status on {res['today']}\n")
         out.append(md_table(res["tasks"], ["state", "id", "task", "interval", "last_done", "due_date",
@@ -1076,7 +1199,7 @@ def render(command, res, problems):
     return "\n".join(out).rstrip() + "\n"
 
 
-COMMANDS = {"validate": cmd_validate, "forbrug": cmd_forbrug, "status": cmd_status,
+COMMANDS = {"validate": cmd_validate, "forbrug": cmd_forbrug, "silo": cmd_silo, "status": cmd_status,
             "prognose": cmd_prognose, "tjekliste": cmd_tjekliste}
 ALIASES = {"consumption": "forbrug", "forecast": "prognose", "checklist": "tjekliste"}
 
@@ -1092,6 +1215,13 @@ def main(argv=None):
         sp.add_argument("--json", action="store_true")
         if name == "forbrug":
             sp.add_argument("--per", choices=["interval", "month", "season"], default="season")
+        if name == "silo":
+            sp.add_argument("--dage", "--days", type=float, default=7, help="window for the average rate")
+            sp.add_argument("--under", type=float, default=None,
+                            help="refill level in sacks; default: Constants 'Refill level (sacks)', else 5")
+        if name == "forbrug":
+            sp.add_argument("--graddage", metavar="CSV",
+                            help="local degree-day CSV written by graddage.py (read only; no network)")
         if name == "prognose":
             sp.add_argument("--days", type=int, default=30)
         if name == "tjekliste":

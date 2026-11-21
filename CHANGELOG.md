@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   through all points (n ≥ 3) for kg per day, per burner hour and per
   Betrieb-STD hour. All marked approximate and kept out of the fill-to-fill
   headline figures.
+- `logbog.py silo`: store level since the last fill, average rate over the
+  last week, and the dates the store falls below the refill level (Constants
+  "Refill level (sacks)", else 5) and runs empty. The skill reports the
+  latest expected next fill right after every fill.
+- `graddage.py`: heating degree days per day from DMI's open Climate Data API
+  for the home's 10 km grid square, into a local CSV. First run asks for the
+  address; only its postal code is sent (to OpenStreetMap) and only the
+  square's id is saved and sent to DMI. `logbog.py forbrug --graddage CSV`
+  adds burner hours per day and per degree day and kg per degree day.
 - `logbog.py validate`: a Time that is not HH:MM is an error; a level before
   fill on a row without a fill is an error; a level that rises without a fill, or a fill whose levels do not
   match the sacks added (by more than one sack), is a warning.

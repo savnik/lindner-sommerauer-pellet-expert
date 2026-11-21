@@ -20,7 +20,12 @@ These are the rules of the `lindner-sommerauer` skill, unchanged.
    about their home or heating system. The one exception in the plugin is the
    separate `feedback` skill, which posts a public GitHub issue about the
    plugin itself, only after showing the exact text and getting a yes, and
-   never with logbook or installation-record contents or identifiers.
+   never with logbook or installation-record contents or identifiers. The
+   other is `scripts/graddage.py` (Degree days, below), which sends a postal
+   code once to OpenStreetMap and then one 10 km grid-square id and a date
+   range to DMI, only on the owner's yes. The address an owner gives for it is
+   the one exception to rule 2: use it only for that, pass it to the script,
+   and never store or repeat it.
 2. **Do not collect identifiers.** Never ask for a name, address, phone
    number, serial number, installer or company name. None is needed to keep a
    logbook. If the user volunteers one, do not store it and do not repeat it
@@ -151,6 +156,7 @@ this skill's directory.)
 | `forbrug` | "how much have we used", kg per hour, kg per burner hour, per season | `--per interval\|month\|season` |
 | `status` | "what's due", "what needs doing" | `--today` |
 | `prognose` | "how much will we need", "should this interval change" | `--days N` |
+| `silo` | "when is the store empty", "when must we fill", after every fill | `--dage N`, `--under SACKS` |
 | `tjekliste` | the TRVB monthly checklist | `--måned YYYY-MM` |
 
 Exit code 1 means the logbook has errors and the script refused to compute.
@@ -242,3 +248,60 @@ with reminders. Never nag.
 
 When the owner asks "what needs doing", run `status`, quote its table, and
 for the hands-on items give the safety lines above before any how-to.
+
+## Degree days
+
+Burner hours per day rise and fall with the weather; burner hours (and kg)
+per degree day take the weather out. Degree days come from DMI's open Climate
+Data API (`acc_heating_degree_days_17`: 17 °C minus the daily mean, days below
+17 °C only), for the 10 km grid square the home is in.
+
+- Only the owner starts this. Before the first fetch, say what is sent (the
+  square's id and the dates, to DMI), what is stored (the id in
+  `pellet-installations/graddage.json`, the values in
+  `pellet-installations/logbog/graddage.csv`) and that the position itself is
+  not stored. Fetch only on a yes, and ask again before a later fetch unless
+  the owner said fetching is fine from now on.
+- First time: ask the owner for the address. Say that only its postal code
+  leaves the machine (to OpenStreetMap, to find the postal area's centre) and
+  that only the 10 km square's id is saved. Run
+  `python3 "${CLAUDE_PLUGIN_ROOT}/skills/logbog/scripts/graddage.py" opsæt --adresse "..."`
+  from the working directory. Never write the address anywhere else, and do
+  not repeat it back. A large rural postal area can land in a neighbouring
+  square; coordinates (`--lat --lon`, converted offline) give the exact one.
+  Run in a terminal without a config, `hent` asks for the address itself.
+- Then `graddage.py hent` fetches up to yesterday (today is not complete),
+  continuing from the first day DMI had not yet quality controlled.
+- `logbog.py forbrug ... --graddage pellet-installations/logbog/graddage.csv`
+  reads that file only, adds degree days to `series`, `steps` and
+  `burner_steps`, and the slopes `burner_hours_per_degree_day` and
+  `kg_per_degree_day` to `fit`. Each day's degree days are spread evenly over
+  its 24 hours; say so when a step is shorter than a few days.
+  `preliminary_weather` marks a step with days DMI has not yet quality
+  controlled; pass that on.
+- A step that reaches into a day missing from the file has no degree-day
+  figure; say which days are missing and that `hent` will fill them.
+- Burner hours per degree day is how hard the boiler works for the weather;
+  it says nothing about efficiency, and a change is a reason to look, not a
+  finding. Degree days are a DMI figure for a 10 km square, not a measurement
+  at the house.
+
+## Next fill
+
+`silo` shows the store level since the last fill and draws a straight line
+from the last level reading at the average rate of the last week (`--dage`,
+default 7; shorter when there are no older readings, and it says so). It gives
+`below_threshold_at`, the date the store falls below the refill level, and
+`empty_at`. The refill level is the Constants row "Refill level (sacks)", the
+owner's own choice, else 5 sacks.
+
+- After writing a fill row (and `validate`), run `silo` and tell the owner the
+  latest expected next fill: `below_threshold_at`, as the date the store
+  reaches the refill level, with the rate and window it rests on, quoted as
+  the script prints them. Mark it approximate: levels are estimated on the
+  sack scale and consumption follows the weather (it rises in a cold spell).
+  This is the one forecast given without being asked, and only right after a
+  fill; it is not a reminder.
+- No levels in sacks, or too few readings: say that no date can be given yet
+  and which reading would give one.
+
