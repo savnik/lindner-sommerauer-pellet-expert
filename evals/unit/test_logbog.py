@@ -434,6 +434,11 @@ class Silo(Series):
         self.assertIn("BEGIN:VALARM", text)
         self.assertTrue(path.read_bytes().endswith(b"END:VCALENDAR\r\n"))
 
+    def test_stock_duration(self):
+        _, res = self.silo(None, "--beholdning", "900")
+        kg_day = res["rate"]["kg_per_day"]
+        self.assertAlmostEqual(res["stock"]["days"], 900 / kg_day, delta=0.05)
+
     def test_no_levels_no_forecast(self):
         _, res = run("silo", "--today", TODAY)
         self.assertNotIn("empty_at", res)

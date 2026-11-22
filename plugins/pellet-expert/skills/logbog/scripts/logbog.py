@@ -903,6 +903,12 @@ def cmd_silo(lb, args):
     out["empty_at"] = at(0)
     out["days_left"] = h(l_last / per_day)
     today = dt.datetime.combine(lb.today, dt.time())
+    if args.beholdning:
+        days = args.beholdning / kg_day
+        out["stock"] = {"kg": args.beholdning, "days": h(days),
+                        "lasts_until": str(lb.today + dt.timedelta(days=days)),
+                        "note": "at the window's average rate from today; the rate follows the weather "
+                                "and the season, so this is a rough guide"}
     out["days_to_threshold_from_today"] = h(max(0.0, (dt.datetime.fromisoformat(out["below_threshold_at"])
                                                      - today).total_seconds() / 86400))
     if args.ics:
@@ -1226,7 +1232,7 @@ def render(command, res, problems):
             r = res["rate"]
             out.append(f"Average over {r['days']} days ({r['from']} to {r['to']}): {r['kg_per_day']} kg/day, "
                        f"{r['sacks_per_day']} sacks/day" + (" (shorter than the window asked for)" if r["short_window"] else ""))
-        for k in ("last_level", "below_threshold_at", "empty_at", "days_left", "verdict", "note"):
+        for k in ("last_level", "below_threshold_at", "empty_at", "days_left", "stock", "verdict", "note"):
             if k in res:
                 out.append(f"- {k}: {res[k]}")
     elif command == "status":
@@ -1285,6 +1291,8 @@ def main(argv=None):
             sp.add_argument("--dage", "--days", type=float, default=7, help="window for the average rate")
             sp.add_argument("--under", type=float, default=None,
                             help="refill level in sacks; default: Constants 'Refill level (sacks)', else 5")
+            sp.add_argument("--beholdning", "--stock", type=float, metavar="KG",
+                            help="also: how long this many kg last at the window's rate, from today")
             sp.add_argument("--ics", metavar="FILE",
                             help="also write a calendar reminder (.ics) for the day before; local file only")
         if name == "fejl":
