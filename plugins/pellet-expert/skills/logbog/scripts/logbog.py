@@ -902,6 +902,15 @@ def cmd_silo(lb, args):
     out["below_threshold_at"] = at(args.under) if l_last > args.under else out["last_level"]["t"]
     out["empty_at"] = at(0)
     out["days_left"] = h(l_last / per_day)
+    today = dt.datetime.combine(lb.today, dt.time())
+    if args.beholdning:
+        days = args.beholdning / kg_day
+        out["stock"] = {"kg": args.beholdning, "days": h(days),
+                        "lasts_until": str(lb.today + dt.timedelta(days=days)),
+                        "note": "at the window's average rate from today; the rate follows the weather "
+                                "and the season, so this is a rough guide"}
+    out["days_to_threshold_from_today"] = h(max(0.0, (dt.datetime.fromisoformat(out["below_threshold_at"])
+                                                     - today).total_seconds() / 86400))
     if args.ics:
         warn_day = dt.datetime.fromisoformat(out["below_threshold_at"]).date()
         out["reminder"] = write_reminder(args.ics, warn_day - dt.timedelta(days=1), warn_day, args.under)
@@ -909,6 +918,38 @@ def cmd_silo(lb, args):
                    "approximate: levels are estimated on the sack scale, and the rate moves with the "
                    "weather. Inference from the owner's own rows.")
     return out
+
+
+def cmd_fejl(lb, args):
+    """Faults logged as 'fault cleared' with an F-code: timeline, frequency per
+    code, and the mean time between consecutive faults (MTBF) in the window."""
+    start = lb.today - dt.timedelta(days=round(args.months * MONTH_D))
+    faults = sorted((d for d in lb.done if d["action"] == "fault cleared" and d["fcode"]),
+                    key=lambda d: d["date"])
+    inwin = [d for d in faults if start <= d["date"] <= lb.today]
+    # A task written as free text names the fault ("Zündstörung"); an ID does not.
+    name = {}
+    for d in faults:
+        if d["task"] and not re.fullmatch(r"[A-Z0-9][A-Z0-9-]*", d["task"]):
+            name.setdefault(d["fcode"], d["task"])
+    timeline = [{"date": str(d["date"]), "fcode": d["fcode"], "name": name.get(d["fcode"])} for d in inwin]
+    counts = {}
+    for d in inwin:
+        counts[d["fcode"]] = counts.get(d["fcode"], 0) + 1
+    freq = [{"fcode": c, "name": name.get(c), "count": n,
+             "last": str(max(d["date"] for d in inwin if d["fcode"] == c))}
+            for c, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
+    gaps = [(b["date"] - a["date"]).days for a, b in zip(inwin, inwin[1:])]
+    mtbf = {"window_from": str(start), "window_to": str(lb.today), "faults": len(inwin),
+            "n_intervals": len(gaps),
+            "mtbf_days": h(statistics.fmean(gaps)) if gaps else None,
+            "days_since_last": (lb.today - inwin[-1]["date"]).days if inwin else None,
+            "note": ("mean days between consecutive faults in the window; with few faults it says "
+                     "little. Only Service done rows with Action 'fault cleared' and an F-code count. "
+                     "What a code means is in parameters.md Kap. 17.")}
+    if not gaps:
+        mtbf["verdict"] = f"{len(inwin)} fault(s) in the window: no interval to average"
+    return {"today": str(lb.today), "timeline": timeline, "frequency": freq, "mtbf": mtbf}
 
 
 def active_plan(lb):
@@ -1064,6 +1105,8 @@ def cmd_prognose(lb, args):
         if med > 0:
             ash["estimated_message_date"] = str(d + dt.timedelta(days=max(0, (setting - val) / med)))
             ash["estimated_F20_date"] = str(d + dt.timedelta(days=max(0, (setting + F20_MARGIN_H - val) / med)))
+            ash["days_to_message_from_today"] = max(
+                0, (dt.date.fromisoformat(ash["estimated_message_date"]) - lb.today).days)
         if ash.get("estimated_message_date", "9999") < str(lb.today):
             ash["stale"] = "the estimated date has already passed; read the counter before acting"
         ash["note"] = ("estimate from the median rate; it moves with the season. "
@@ -1174,6 +1217,13 @@ def render(command, res, problems):
                                                  "burner_hours", "burner_days_covered"]))
         out.append("")
         out += [f"Note: {n}" for n in res["notes"]]
+    elif command == "fejl":
+        out.append(f"## Faults {res['mtbf']['window_from']} to {res['mtbf']['window_to']}\n")
+        out.append(md_table(res["timeline"], ["date", "fcode", "name"]) if res["timeline"] else "No faults logged.")
+        if res["frequency"]:
+            out.append("### Frequency\n")
+            out.append(md_table(res["frequency"], ["fcode", "name", "count", "last"]))
+        out += [f"- {k}: {v}" for k, v in res["mtbf"].items()]
     elif command == "silo":
         out.append(f"## Store level since {res.get('since', '–')}\n")
         if res.get("levels"):
@@ -1182,7 +1232,7 @@ def render(command, res, problems):
             r = res["rate"]
             out.append(f"Average over {r['days']} days ({r['from']} to {r['to']}): {r['kg_per_day']} kg/day, "
                        f"{r['sacks_per_day']} sacks/day" + (" (shorter than the window asked for)" if r["short_window"] else ""))
-        for k in ("last_level", "below_threshold_at", "empty_at", "days_left", "verdict", "note"):
+        for k in ("last_level", "below_threshold_at", "empty_at", "days_left", "stock", "verdict", "note"):
             if k in res:
                 out.append(f"- {k}: {res[k]}")
     elif command == "status":
@@ -1220,9 +1270,10 @@ def render(command, res, problems):
     return "\n".join(out).rstrip() + "\n"
 
 
-COMMANDS = {"validate": cmd_validate, "forbrug": cmd_forbrug, "silo": cmd_silo, "status": cmd_status,
+COMMANDS = {"validate": cmd_validate, "forbrug": cmd_forbrug, "silo": cmd_silo, "fejl": cmd_fejl,
+            "status": cmd_status,
             "prognose": cmd_prognose, "tjekliste": cmd_tjekliste}
-ALIASES = {"consumption": "forbrug", "forecast": "prognose", "checklist": "tjekliste"}
+ALIASES = {"faults": "fejl", "consumption": "forbrug", "forecast": "prognose", "checklist": "tjekliste"}
 
 
 def main(argv=None):
@@ -1240,8 +1291,12 @@ def main(argv=None):
             sp.add_argument("--dage", "--days", type=float, default=7, help="window for the average rate")
             sp.add_argument("--under", type=float, default=None,
                             help="refill level in sacks; default: Constants 'Refill level (sacks)', else 5")
+            sp.add_argument("--beholdning", "--stock", type=float, metavar="KG",
+                            help="also: how long this many kg last at the window's rate, from today")
             sp.add_argument("--ics", metavar="FILE",
                             help="also write a calendar reminder (.ics) for the day before; local file only")
+        if name == "fejl":
+            sp.add_argument("--maaneder", "--months", dest="months", type=float, default=12)
         if name == "forbrug":
             sp.add_argument("--graddage", metavar="CSV",
                             help="local degree-day CSV written by graddage.py (read only; no network)")

@@ -364,6 +364,42 @@ class Series(Base):
 
 
 
+class Faults(Base):
+    ROWS = ["| 2025-05-01 | Zündstörung | fault cleared | F4 | | | owner | O | |",
+            "| 2025-08-01 | Zündstörung | fault cleared | F4 | | | owner | O | |",
+            "| 2025-09-01 | Saugzug | fault cleared | F5 | | | owner | O | |",
+            "| 2025-10-01 | BRENNRAUM | cleaned | | | ok | owner | O | |"]
+
+    def fejl(self, *extra):
+        text = self.text
+        for r in self.ROWS:
+            self.text = text = self.with_row("Service done", r)
+        return run("fejl", "--today", "2025-11-15", *extra, text=text, tmp=self.tmp)
+
+    def test_frequency_sorted_high_to_low(self):
+        _, res = self.fejl()
+        self.assertEqual([(f["fcode"], f["count"]) for f in res["frequency"]], [("F4", 2), ("F20", 1), ("F5", 1)])
+        self.assertEqual(res["frequency"][0]["name"], "Zündstörung")
+
+    def test_id_task_gives_no_name(self):
+        _, res = self.fejl()
+        self.assertIsNone(next(f for f in res["frequency"] if f["fcode"] == "F20")["name"])
+
+    def test_mtbf_mean_of_gaps(self):
+        _, res = self.fejl()
+        m = res["mtbf"]   # 2025-02-14, 05-01, 08-01, 09-01: gaps 76, 92, 31
+        self.assertEqual((m["faults"], m["n_intervals"], m["mtbf_days"]), (4, 3, round((76 + 92 + 31) / 3, 2)))
+        self.assertEqual(m["days_since_last"], 75)
+
+    def test_window(self):
+        _, res = self.fejl("--maaneder", "6")
+        self.assertEqual([t["date"] for t in res["timeline"]], ["2025-08-01", "2025-09-01"])
+
+    def test_cleaning_is_not_a_fault(self):
+        _, res = self.fejl()
+        self.assertNotIn("2025-10-01", [t["date"] for t in res["timeline"]])
+
+
 class Silo(Series):
     def silo(self, rows=None, *extra):
         return run("silo", "--today", "2025-01-12", *extra, text=self.level_text(rows or self.ROWS), tmp=self.tmp)
@@ -381,6 +417,7 @@ class Silo(Series):
         per_day = 180 / 6.5 / 15
         self.assertEqual(res["days_left"], round(28 / per_day, 2))
         self.assertLess(res["below_threshold_at"], res["empty_at"])
+        self.assertGreaterEqual(res["days_to_threshold_from_today"], 0)
 
     def test_window_starts_at_last_point_before_it(self):
         _, res = self.silo(None, "--dage", "3")
@@ -396,6 +433,11 @@ class Silo(Series):
         self.assertIn(f"DTSTART;VALUE=DATE:{day.replace('-', '')}", text)
         self.assertIn("BEGIN:VALARM", text)
         self.assertTrue(path.read_bytes().endswith(b"END:VCALENDAR\r\n"))
+
+    def test_stock_duration(self):
+        _, res = self.silo(None, "--beholdning", "900")
+        kg_day = res["rate"]["kg_per_day"]
+        self.assertAlmostEqual(res["stock"]["days"], 900 / kg_day, delta=0.05)
 
     def test_no_levels_no_forecast(self):
         _, res = run("silo", "--today", TODAY)
