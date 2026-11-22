@@ -157,7 +157,7 @@ this skill's directory.)
 | `status` | "what's due", "what needs doing" | `--today` |
 | `prognose` | "how much will we need", "should this interval change" | `--days N` |
 | `fejl` | "how often does it fail", MTBF, which faults are most frequent | `--maaneder N` |
-| `silo` | "when is the store empty", "when must we fill", after every fill | `--dage N`, `--under SACKS` |
+| `silo` | "when is the store empty", "when must we fill", after every fill; "how long do N kg last" | `--dage N`, `--under SACKS`, `--beholdning KG` |
 | `tjekliste` | the TRVB monthly checklist | `--måned YYYY-MM` |
 
 Exit code 1 means the logbook has errors and the script refused to compute.

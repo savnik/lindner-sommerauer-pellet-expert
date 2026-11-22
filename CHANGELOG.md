@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   last 12 months (`--maaneder`): a timeline, the frequency per code sorted
   from most to least frequent, and the mean days between consecutive faults
   (MTBF) with the number of intervals it rests on.
-- `logbog.py silo`: `days_to_threshold_from_today`.
+- `logbog.py silo`: `days_to_threshold_from_today`, and `--beholdning KG`:
+  how long a stock of pellets lasts at the window's average rate, from today.
 - `logbog.py prognose`: `days_to_message_from_today` for the ash drawer.
 
 ## [0.3.4] - 2026-11-21
