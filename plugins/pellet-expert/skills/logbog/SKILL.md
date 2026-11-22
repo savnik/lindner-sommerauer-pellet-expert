@@ -156,6 +156,7 @@ this skill's directory.)
 | `forbrug` | "how much have we used", kg per hour, kg per burner hour, per season | `--per interval\|month\|season` |
 | `status` | "what's due", "what needs doing" | `--today` |
 | `prognose` | "how much will we need", "should this interval change" | `--days N` |
+| `fejl` | "how often does it fail", MTBF, which faults are most frequent | `--maaneder N` |
 | `silo` | "when is the store empty", "when must we fill", after every fill | `--dage N`, `--under SACKS` |
 | `tjekliste` | the TRVB monthly checklist | `--måned YYYY-MM` |
 
@@ -311,4 +312,16 @@ owner's own choice, else 5 sacks.
   On a no, do not ask again until the next fill.
 - No levels in sacks, or too few readings: say that no date can be given yet
   and which reading would give one.
+
+
+
+## Faults
+
+`fejl` counts Service done rows with Action "fault cleared" and an F-code
+over the last 12 months: a timeline, how often each code occurred (most
+frequent first), and the MTBF, the mean days between consecutive faults, with
+the number of intervals. Quote the MTBF with that number: two faults give one
+interval, which says little. What a code means comes from `parameters.md`
+Kap. 17, cited, never from the logbook's own wording. A fault that was never
+logged is not counted, so say that the figures cover logged faults only.
 

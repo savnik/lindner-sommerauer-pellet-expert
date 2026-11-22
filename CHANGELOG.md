@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-11-22
+
+### Added
+
+- `logbog.py fejl`: faults logged as "fault cleared" with an F-code over the
+  last 12 months (`--maaneder`): a timeline, the frequency per code sorted
+  from most to least frequent, and the mean days between consecutive faults
+  (MTBF) with the number of intervals it rests on.
+- `logbog.py silo`: `days_to_threshold_from_today`.
+- `logbog.py prognose`: `days_to_message_from_today` for the ash drawer.
+
 ## [0.3.4] - 2026-11-21
 
 ### Added
